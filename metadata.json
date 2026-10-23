@@ -1,0 +1,8 @@
+{
+  "name": "Colégio Unidade Polo · Biblioteca Escolar",
+  "description": "Sistema moderno e profissional de Biblioteca Escolar do Colégio Unidade Polo: catálogo de livros, empréstimos com 1 clique, devoluções, cadastro de alunos, painel da coordenadora e integração Supabase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
