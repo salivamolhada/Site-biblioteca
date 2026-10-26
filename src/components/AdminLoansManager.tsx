@@ -54,10 +54,10 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
   };
 
   return (
-    <div className="space-y-6 text-slate-100">
+    <div className="space-y-6 text-stone-100">
       {/* Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#0A192F] text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-blue-500/50 flex items-center gap-3 text-sm font-semibold animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#1C1917] text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-emerald-500/50 flex items-center gap-3 text-sm font-semibold animate-fade-in">
           <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -66,27 +66,27 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-500/30 font-semibold">
+          <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950/70 text-emerald-300 border border-emerald-500/30 font-semibold">
             Circulação de Exemplares
           </span>
-          <span className="text-xs text-slate-400">Total no Histórico: <strong className="text-white">{loans.length} registros</strong></span>
+          <span className="text-xs text-stone-400">Total no Histórico: <strong className="text-white">{loans.length} registros</strong></span>
         </div>
         <h1 className="text-2xl font-bold text-white tracking-tight">Todos os Empréstimos & Histórico</h1>
-        <p className="text-xs sm:text-sm text-slate-400">
+        <p className="text-xs sm:text-sm text-stone-400">
           Registro completo de empréstimos, devoluções e renovações da Biblioteca do Colégio Unidade Polo.
         </p>
       </div>
 
       {/* Filter and search */}
-      <div className="bg-[#0A192F] p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between shadow-sm">
+      <div className="bg-[#181715] p-4 rounded-2xl border border-stone-800 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between shadow-sm">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por livro, aluno ou matrícula..."
-            className="w-full pl-9 pr-4 py-2.5 bg-[#071324] border border-slate-700 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+            className="w-full pl-9 pr-4 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-sm text-white placeholder:text-stone-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
           />
         </div>
 
@@ -95,8 +95,8 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
             onClick={() => setStatusFilter('all')}
             className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
               statusFilter === 'all'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-[#071324] text-slate-300 hover:text-white border border-slate-700'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'bg-[#11100E] text-stone-300 hover:text-white border border-stone-700'
             }`}
           >
             Todos
@@ -105,8 +105,8 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
             onClick={() => setStatusFilter('active')}
             className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
               statusFilter === 'active'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-[#071324] text-slate-300 hover:text-white border border-slate-700'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'bg-[#11100E] text-stone-300 hover:text-white border border-stone-700'
             }`}
           >
             Ativos em Mãos
@@ -115,8 +115,8 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
             onClick={() => setStatusFilter('overdue')}
             className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
               statusFilter === 'overdue'
-                ? 'bg-rose-600 text-white shadow-sm'
-                : 'bg-[#071324] text-slate-300 hover:text-white border border-slate-700'
+                ? 'bg-rose-600 text-white shadow-md'
+                : 'bg-[#11100E] text-stone-300 hover:text-white border border-stone-700'
             }`}
           >
             Atrasados
@@ -125,8 +125,8 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
             onClick={() => setStatusFilter('returned')}
             className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
               statusFilter === 'returned'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-[#071324] text-slate-300 hover:text-white border border-slate-700'
+                ? 'bg-amber-600 text-white shadow-sm'
+                : 'bg-[#11100E] text-stone-300 hover:text-white border border-stone-700'
             }`}
           >
             Devolvidos
@@ -135,10 +135,10 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
       </div>
 
       {/* Loans Table */}
-      <div className="bg-[#0A192F] border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-[#181715] border border-stone-800 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#071324] text-slate-400 font-semibold border-b border-slate-800">
+            <thead className="bg-[#11100E] text-stone-400 font-semibold border-b border-stone-800">
               <tr>
                 <th className="py-3 px-4">Aluno(a)</th>
                 <th className="py-3 px-4">Livro</th>
@@ -149,7 +149,7 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
                 <th className="py-3 px-4 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800 text-slate-300">
+            <tbody className="divide-y divide-stone-800 text-stone-300">
               {filteredLoans.map((loan) => {
                 const book = books.find((b) => b.id === loan.bookId);
                 const user = users.find((u) => u.id === loan.userId);
@@ -158,22 +158,22 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
                 const isOverdue = !isReturned && days < 0;
 
                 return (
-                  <tr key={loan.id} className="hover:bg-slate-850 transition-colors">
+                  <tr key={loan.id} className="hover:bg-stone-800/40 transition-colors">
                     <td className="py-3 px-4">
                       <p className="font-bold text-white text-sm">{user?.name || 'Aluno'}</p>
-                      <p className="text-slate-400 text-[11px] font-mono">{user?.matricula} · {user?.turma}</p>
+                      <p className="text-stone-400 text-[11px] font-mono">{user?.matricula} · {user?.turma}</p>
                     </td>
                     <td className="py-3 px-4">
                       <p className="font-semibold text-white font-serif">{book?.title}</p>
-                      <p className="text-slate-400 text-[11px]">{book?.author}</p>
+                      <p className="text-stone-400 text-[11px]">{book?.author}</p>
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-400">{loan.borrowedAt}</td>
+                    <td className="py-3 px-4 font-mono text-stone-400">{loan.borrowedAt}</td>
                     <td className="py-3 px-4">
-                      <span className={`font-mono font-bold ${isOverdue ? 'text-rose-400' : 'text-slate-200'}`}>
+                      <span className={`font-mono font-bold ${isOverdue ? 'text-rose-400' : 'text-stone-200'}`}>
                         {loan.dueDate}
                       </span>
                       {!isReturned && (
-                        <span className="block text-[10px] text-slate-400">
+                        <span className="block text-[10px] text-stone-400">
                           {isOverdue ? `${Math.abs(days)} dias de atraso` : `Restam ${days} dias`}
                         </span>
                       )}
@@ -182,7 +182,7 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
                       {loan.returnedAt ? (
                         <span className="text-emerald-400 font-semibold">{loan.returnedAt}</span>
                       ) : (
-                        <span className="text-slate-500">—</span>
+                        <span className="text-stone-500">—</span>
                       )}
                     </td>
                     <td className="py-3 px-4">
@@ -197,8 +197,8 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
                           <span>Atrasado</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-950/70 text-blue-300 border border-blue-500/40 text-[10px] font-semibold">
-                          <Clock className="w-3 h-3 text-blue-400" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-stone-800 text-stone-300 border border-stone-700 text-[10px] font-semibold">
+                          <Clock className="w-3 h-3 text-emerald-400" />
                           <span>Em Dia</span>
                         </span>
                       )}
@@ -207,12 +207,12 @@ export const AdminLoansManager: React.FC<AdminLoansManagerProps> = ({
                       {!isReturned ? (
                         <button
                           onClick={() => handleConfirmReturn(loan.id)}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs transition-colors cursor-pointer"
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs transition-colors cursor-pointer shadow-xs"
                         >
                           Dar Baixa
                         </button>
                       ) : (
-                        <span className="text-slate-500 text-[11px]">Concluído</span>
+                        <span className="text-stone-500 text-[11px]">Concluído</span>
                       )}
                     </td>
                   </tr>

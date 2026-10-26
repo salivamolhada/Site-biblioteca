@@ -34,16 +34,16 @@ export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
           {/* Shield Outer Shadow & Base */}
           <path
             d="M50 4 L86 18 V52 C86 74 70 90 50 96 C30 90 14 74 14 52 V18 L50 4 Z"
-            fill="#0F172A"
+            fill="#1C1917"
             stroke="#D97706"
             strokeWidth="3.5"
             strokeLinejoin="round"
           />
 
-          {/* Shield Inner Background (Academic Navy) */}
+          {/* Shield Inner Background (Academic Emerald & Charcoal) */}
           <path
             d="M50 9 L81 21 V52 C81 71 67 86 50 91 C33 86 19 71 19 52 V21 L50 9 Z"
-            fill="url(#collegiateNavyGrad)"
+            fill="url(#collegiateEmeraldGrad)"
           />
 
           {/* Academic Torch of Knowledge (Center Top) */}
@@ -63,8 +63,8 @@ export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
           {/* Open Book of Wisdom & Science */}
           <path
             d="M28 42 C38 39 46 41 50 45 C54 41 62 39 72 42 V63 C62 60 54 62 50 66 C46 62 38 60 28 63 V42 Z"
-            fill="#FFFFFF"
-            stroke="#1E3A8A"
+            fill="#FFFDF7"
+            stroke="#065F46"
             strokeWidth="2"
             strokeLinejoin="round"
           />
@@ -78,8 +78,8 @@ export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
           />
 
           {/* Book Pages Texture Lines */}
-          <path d="M33 49 H45 M33 54 H43 M33 59 H41" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M55 49 H67 M57 54 H67 M59 59 H67" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M33 49 H45 M33 54 H43 M33 59 H41" stroke="#78716C" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M55 49 H67 M57 54 H67 M59 59 H67" stroke="#78716C" strokeWidth="1.5" strokeLinecap="round" />
 
           {/* Academic Star (Excellence Motif) */}
           <polygon
@@ -90,10 +90,10 @@ export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
           />
 
           <defs>
-            <linearGradient id="collegiateNavyGrad" x1="50" y1="9" x2="50" y2="91" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#1E3A8A" />
-              <stop offset="50%" stopColor="#0F2856" />
-              <stop offset="100%" stopColor="#0A192F" />
+            <linearGradient id="collegiateEmeraldGrad" x1="50" y1="9" x2="50" y2="91" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#065F46" />
+              <stop offset="50%" stopColor="#064E3B" />
+              <stop offset="100%" stopColor="#141311" />
             </linearGradient>
           </defs>
         </svg>
@@ -102,14 +102,14 @@ export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
       {showText && (
         <div className="flex flex-col text-left">
           <div className="flex items-center gap-2">
-            <span className={`font-black tracking-tight text-white font-sans ${current.text}`}>
+            <span className={`font-black tracking-tight text-stone-100 font-sans ${current.text}`}>
               Colégio Unidade Polo
             </span>
           </div>
-          <span className={`font-semibold text-slate-300 tracking-wide flex items-center gap-1.5 ${current.sub}`}>
+          <span className={`font-semibold text-stone-400 tracking-wide flex items-center gap-1.5 ${current.sub}`}>
             <span>Biblioteca Escolar</span>
-            <span className="text-amber-400 font-bold">·</span>
-            <span className="text-amber-400 font-medium">Acervo Acadêmico</span>
+            <span className="text-amber-500 font-bold">·</span>
+            <span className="text-emerald-400 font-medium">Acervo Acadêmico</span>
           </span>
         </div>
       )}

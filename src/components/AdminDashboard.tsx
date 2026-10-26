@@ -22,156 +22,158 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const availableCopies = books.reduce((sum, b) => sum + b.availableCopies, 0);
   const activeLoans = loans.filter((l) => l.returnedAt === null);
 
-  // Overdue calculation (dueDate < 2026-10-23)
+  // Overdue calculation (dueDate < 2026-10-26)
   const overdueLoans = activeLoans.filter((l) => {
-    return l.dueDate < '2026-10-23';
+    return l.dueDate < '2026-10-26';
   });
 
   const studentsCount = users.filter((u) => u.role === 'student').length;
 
   return (
-    <div className="space-y-8 text-slate-100">
-      {/* Title */}
+    <div className="space-y-8 text-stone-100">
+      {/* Title & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-500/30 font-semibold">
-              Painel Administrativo da Coordenação
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs text-stone-400">
+            <span className="text-amber-400 font-semibold uppercase tracking-wider">
+              Coordenação da Biblioteca
             </span>
-            <span className="text-xs text-slate-400">Usuário: <strong className="text-white font-mono">ADMIN</strong></span>
+            <span aria-hidden="true">·</span>
+            <span>Credencial: <strong className="text-white font-mono">ADMIN</strong></span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Dashboard da Biblioteca Escolar
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Painel Geral de Gestão do Acervo
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Colégio Unidade Polo · Visão consolidada do acervo, circulação de exemplares e devoluções.
+          <p className="text-xs sm:text-sm text-stone-400">
+            Colégio Unidade Polo · Visão consolidada de inventário, circulação e devoluções.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5 shrink-0">
           <button
             onClick={() => onNavigate('admin-books')}
-            className="px-4 py-2 bg-[#0A192F] hover:bg-slate-800 text-white border border-slate-700 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+            className="px-4 py-2 bg-[#11100E] hover:bg-stone-800 text-stone-200 border border-stone-700/80 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
           >
             Gerenciar Acervo
           </button>
           <button
             onClick={() => onNavigate('admin-loans')}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs sm:text-sm font-semibold transition-colors shadow-sm cursor-pointer"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs sm:text-sm font-semibold transition-colors shadow-xs cursor-pointer"
           >
-            Ver Todos Empréstimos
+            Circulação Completa
           </button>
         </div>
       </div>
 
-      {/* KPI Metric Cards */}
+      {/* KPI Metric Cards (Tabular Numerals) */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-[#0A192F] p-5 rounded-2xl border border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Títulos</span>
-            <BookOpen className="w-4 h-4 text-blue-400" />
+        <div className="bg-[#181715] p-5 rounded-2xl border border-stone-800 shadow-xs">
+          <div className="flex items-center justify-between text-stone-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">Títulos Únicos</span>
+            <BookOpen className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-2 tabular-nums">{totalBooks}</p>
-          <span className="text-[11px] text-slate-400 mt-0.5 block">{totalCopies} exemplares físicos</span>
+          <p className="text-2xl sm:text-3xl font-black text-white mt-2 font-mono tabular-nums">{totalBooks}</p>
+          <span className="text-[11px] text-stone-400 mt-0.5 block">{totalCopies} exemplares físicos</span>
         </div>
 
-        <div className="bg-[#0A192F] p-5 rounded-2xl border border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Disponíveis</span>
+        <div className="bg-[#181715] p-5 rounded-2xl border border-stone-800 shadow-xs">
+          <div className="flex items-center justify-between text-stone-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">Disponíveis</span>
             <CheckCircle className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-emerald-400 mt-2 tabular-nums">{availableCopies}</p>
-          <span className="text-[11px] text-slate-400 mt-0.5 block">Prontos para empréstimo</span>
+          <p className="text-2xl sm:text-3xl font-black text-emerald-400 mt-2 font-mono tabular-nums">{availableCopies}</p>
+          <span className="text-[11px] text-stone-400 mt-0.5 block">Prontos para retirada</span>
         </div>
 
-        <div className="bg-[#0A192F] p-5 rounded-2xl border border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Empréstimos</span>
+        <div className="bg-[#181715] p-5 rounded-2xl border border-stone-800 shadow-xs">
+          <div className="flex items-center justify-between text-stone-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">Em Circulação</span>
             <BookMarked className="w-4 h-4 text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-amber-300 mt-2 tabular-nums">{activeLoans.length}</p>
-          <span className="text-[11px] text-slate-400 mt-0.5 block">Circulando com alunos</span>
+          <p className="text-2xl sm:text-3xl font-black text-stone-200 mt-2 font-mono tabular-nums">{activeLoans.length}</p>
+          <span className="text-[11px] text-stone-400 mt-0.5 block">Com alunos e professores</span>
         </div>
 
-        <div className="bg-[#0A192F] p-5 rounded-2xl border border-rose-500/30 shadow-sm">
+        <div className="bg-[#181715] p-5 rounded-2xl border border-rose-500/20 shadow-xs">
           <div className="flex items-center justify-between text-rose-400">
-            <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">Atrasados</span>
-            <AlertTriangle className="w-4 h-4 text-rose-500" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Em Atraso</span>
+            <AlertTriangle className="w-4 h-4 text-rose-400" />
           </div>
-          <p className="text-2xl font-bold text-rose-400 mt-2 tabular-nums">{overdueLoans.length}</p>
-          <span className="text-[11px] text-rose-300 mt-0.5 block">Prazo estourado</span>
+          <p className="text-2xl sm:text-3xl font-black text-rose-400 mt-2 font-mono tabular-nums">{overdueLoans.length}</p>
+          <span className="text-[11px] text-rose-300 mt-0.5 block">Cobrança pendente</span>
         </div>
 
-        <div className="bg-[#0A192F] p-5 rounded-2xl border border-slate-800 shadow-sm col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Alunos Ativos</span>
-            <Users className="w-4 h-4 text-sky-400" />
+        <div className="bg-[#181715] p-5 rounded-2xl border border-stone-800 shadow-xs col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between text-stone-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">Alunos Ativos</span>
+            <Users className="w-4 h-4 text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-2 tabular-nums">{studentsCount}</p>
-          <span className="text-[11px] text-slate-400 mt-0.5 block">Alunos cadastrados</span>
+          <p className="text-2xl sm:text-3xl font-black text-white mt-2 font-mono tabular-nums">{studentsCount}</p>
+          <span className="text-[11px] text-stone-400 mt-0.5 block">Usuários no sistema</span>
         </div>
       </div>
 
-      {/* Main Grid: Overdue Alerts & Quick Actions */}
+      {/* Main Grid: Overdue Table & Quick Circulation Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Overdue Loans Priority Table */}
-        <div className="lg:col-span-2 bg-[#0A192F] border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="lg:col-span-2 bg-[#181715] border border-stone-800 rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-stone-800 pb-3">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-rose-400" />
-              <h2 className="text-base font-bold text-white">Devoluções Atrasadas (Atenção Prioritária)</h2>
+              <AlertTriangle className="w-4 h-4 text-rose-400" />
+              <h2 className="text-base font-bold text-white">
+                Pendências Críticas de Devolução ({overdueLoans.length})
+              </h2>
             </div>
             <button
               onClick={() => onNavigate('coordinator-pending')}
-              className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer"
+              className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 cursor-pointer transition-colors"
             >
-              <span>Ver painel de cobrança</span>
+              <span>Ver todas pendências</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {overdueLoans.length === 0 ? (
-            <div className="p-8 text-center bg-[#071324] rounded-xl border border-slate-800 text-xs text-slate-400">
-              <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
-              <p className="font-semibold text-white">Nenhum empréstimo em atraso!</p>
-              <p className="mt-0.5">Todos os livros em circulação estão dentro do prazo regulamentar.</p>
+            <div className="py-10 text-center space-y-2">
+              <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto" />
+              <p className="text-sm font-semibold text-white">Nenhum empréstimo atrasado</p>
+              <p className="text-xs text-stone-400">Todas as obras em circulação estão rigorosamente dentro dos prazos regulamentares.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#071324] text-slate-400 font-semibold border-b border-slate-800">
+                <thead className="bg-[#11100E] text-stone-400 text-[11px] uppercase tracking-wider font-semibold border-b border-stone-800">
                   <tr>
                     <th className="py-2.5 px-3">Aluno</th>
                     <th className="py-2.5 px-3">Livro</th>
-                    <th className="py-2.5 px-3">Vencimento</th>
+                    <th className="py-2.5 px-3">Prazo</th>
                     <th className="py-2.5 px-3 text-right">Ação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-stone-800 text-stone-300">
                   {overdueLoans.slice(0, 5).map((loan) => {
                     const student = users.find((u) => u.id === loan.userId);
                     const book = books.find((b) => b.id === loan.bookId);
 
                     return (
-                      <tr key={loan.id} className="hover:bg-slate-850">
-                        <td className="py-3 px-3">
-                          <p className="font-bold text-white">{student?.name}</p>
-                          <p className="text-[11px] text-slate-400">{student?.turma} · {student?.matricula}</p>
+                      <tr key={loan.id} className="hover:bg-stone-800/40 transition-colors">
+                        <td className="py-3 px-3 font-medium text-white">
+                          <div>{student?.name || 'Aluno'}</div>
+                          <div className="text-[11px] text-stone-400 font-mono">{student?.matricula}</div>
                         </td>
                         <td className="py-3 px-3">
-                          <p className="font-semibold text-slate-200">{book?.title}</p>
-                          <p className="text-[11px] text-slate-400">{book?.author}</p>
+                          <div className="line-clamp-1">{book?.title || 'Obra'}</div>
+                          <div className="text-[11px] text-stone-400">{book?.author}</div>
                         </td>
-                        <td className="py-3 px-3">
-                          <span className="font-mono font-bold text-rose-400 block">{loan.dueDate}</span>
-                          <span className="text-[10px] text-rose-300">Prazo expirado</span>
+                        <td className="py-3 px-3 font-mono text-rose-400 font-semibold">
+                          {loan.dueDate}
                         </td>
                         <td className="py-3 px-3 text-right">
                           <button
                             onClick={() => onReturnBook(loan.id)}
-                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] transition-colors cursor-pointer"
                           >
-                            Dar Baixa
+                            Baixa Imediata
                           </button>
                         </td>
                       </tr>
@@ -183,44 +185,40 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           )}
         </div>
 
-        {/* Right Col: Quick Access */}
-        <div className="space-y-6">
-          <div className="bg-[#0A192F] border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-            <h2 className="text-base font-bold text-white">Ações da Coordenação</h2>
-            <div className="space-y-2.5">
-              <button
-                onClick={() => onNavigate('admin-books')}
-                className="w-full p-3 rounded-xl bg-[#071324] hover:bg-slate-800 border border-slate-800 text-left transition-all flex items-center justify-between cursor-pointer"
-              >
-                <div>
-                  <p className="font-bold text-white text-xs">Cadastrar Novo Livro</p>
-                  <p className="text-[11px] text-slate-400">Adicionar exemplar com ISBN e localização</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-blue-400" />
-              </button>
+        {/* Right Col: School Circulation Overview */}
+        <div className="bg-[#181715] border border-stone-800 rounded-2xl p-6 shadow-xs space-y-4 flex flex-col justify-between">
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <Shield className="w-4 h-4 text-amber-400" />
+              <span>Diretrizes de Circulação</span>
+            </h3>
 
-              <button
-                onClick={() => onNavigate('coordinator-pending')}
-                className="w-full p-3 rounded-xl bg-[#071324] hover:bg-slate-800 border border-slate-800 text-left transition-all flex items-center justify-between cursor-pointer"
-              >
-                <div>
-                  <p className="font-bold text-white text-xs">Cobrança de Pendências</p>
-                  <p className="text-[11px] text-slate-400">Avisos automáticos de devolução no WhatsApp</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-amber-400" />
-              </button>
+            <div className="space-y-3 text-xs text-stone-300 leading-relaxed">
+              <div className="p-3 rounded-xl bg-[#11100E] border border-stone-800 space-y-1">
+                <span className="font-semibold text-white block">Prazo Padrão de Leitura</span>
+                <span className="text-stone-400">14 dias corridos com até 2 renovações automáticas (+7 dias cada).</span>
+              </div>
 
-              <button
-                onClick={() => onNavigate('catalog')}
-                className="w-full p-3 rounded-xl bg-[#071324] hover:bg-slate-800 border border-slate-800 text-left transition-all flex items-center justify-between cursor-pointer"
-              >
-                <div>
-                  <p className="font-bold text-white text-xs">Visualizar como Aluno</p>
-                  <p className="text-[11px] text-slate-400">Ver acervo e catálogo público</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-400" />
-              </button>
+              <div className="p-3 rounded-xl bg-[#11100E] border border-stone-800 space-y-1">
+                <span className="font-semibold text-white block">Sincronização em Nuvem</span>
+                <span className="text-stone-400">Banco de dados Google Cloud Firestore ativo com persistência em tempo real.</span>
+              </div>
             </div>
+          </div>
+
+          <div className="pt-4 border-t border-stone-800 space-y-2">
+            <button
+              onClick={() => onNavigate('admin-books')}
+              className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer text-center block shadow-xs"
+            >
+              + Cadastrar Novo Livro no Acervo
+            </button>
+            <button
+              onClick={() => onNavigate('admin-loans')}
+              className="w-full py-2.5 px-4 rounded-xl bg-[#11100E] hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-700/80 font-medium text-xs transition-colors cursor-pointer text-center block"
+            >
+              Gerenciar Devoluções e Renovações
+            </button>
           </div>
         </div>
       </div>

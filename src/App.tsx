@@ -16,12 +16,23 @@ import { AdminLoansManager } from './components/AdminLoansManager';
 import { PrismaDocsModal } from './components/PrismaDocsModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { AuthModal } from './components/AuthModal';
-import { SupabaseModal } from './components/SupabaseModal';
+import { FirebaseModal } from './components/FirebaseModal';
 import { ColegioPoloLogo } from './components/ColegioPoloLogo';
-import { ShieldCheck, Lock, Database, BookOpen, CheckCircle2, UserPlus, LogIn } from 'lucide-react';
+import { Lock, Flame, UserPlus, LogIn } from 'lucide-react';
+import {
+  testFirestoreConnection,
+  subscribeToBooks,
+  subscribeToLoans,
+  subscribeToUsers,
+  saveBookToFirestore,
+  deleteBookFromFirestore,
+  saveLoanToFirestore,
+  saveUserToFirestore,
+  seedInitialFirestoreData,
+} from './lib/firebase';
 
 export default function App() {
-  // Persisted Users
+  // Users state with local storage fallback
   const [users, setUsers] = useState<User[]>(() => {
     const saved = localStorage.getItem('polo_library_users_v3');
     return saved ? JSON.parse(saved) : seedUsers;
@@ -39,13 +50,13 @@ export default function App() {
     return localStorage.getItem('polo_admin_auth_v3') === 'true';
   });
 
-  // Persisted Books
+  // Books state
   const [books, setBooks] = useState<Book[]>(() => {
     const saved = localStorage.getItem('polo_library_books_v3');
     return saved ? JSON.parse(saved) : seedBooks;
   });
 
-  // Persisted Loans
+  // Loans state
   const [loans, setLoans] = useState<Loan[]>(() => {
     const saved = localStorage.getItem('polo_library_loans_v3');
     return saved ? JSON.parse(saved) : seedLoans;
@@ -60,9 +71,9 @@ export default function App() {
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState<'login' | 'register'>('login');
-  const [isSupabaseOpen, setIsSupabaseOpen] = useState(false);
+  const [isFirebaseOpen, setIsFirebaseOpen] = useState(false);
 
-  // Synchronize to localStorage
+  // Synchronize to localStorage as local cache
   useEffect(() => {
     localStorage.setItem('polo_library_users_v3', JSON.stringify(users));
   }, [users]);
@@ -82,6 +93,49 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('polo_admin_auth_v3', String(isAdmin));
   }, [isAdmin]);
+
+  // Initialize Firebase connection, seed if empty, and subscribe to real-time updates
+  useEffect(() => {
+    let unsubBooks: (() => void) | undefined;
+    let unsubLoans: (() => void) | undefined;
+    let unsubUsers: (() => void) | undefined;
+
+    const initFirebase = async () => {
+      await testFirestoreConnection();
+      await seedInitialFirestoreData(seedBooks, seedUsers, seedLoans);
+
+      // Realtime listener for Books
+      unsubBooks = subscribeToBooks((remoteBooks) => {
+        if (remoteBooks.length > 0) {
+          setBooks(remoteBooks);
+        }
+      });
+
+      // Realtime listener for Loans
+      unsubLoans = subscribeToLoans((remoteLoans) => {
+        if (remoteLoans.length > 0) {
+          setLoans(remoteLoans);
+        }
+      });
+
+      // Realtime listener for Users
+      unsubUsers = subscribeToUsers((remoteUsers) => {
+        if (remoteUsers.length > 0) {
+          setUsers(remoteUsers);
+        }
+      });
+    };
+
+    initFirebase().catch((err) => {
+      console.warn('Firebase sync initialized in offline/resilient mode:', err);
+    });
+
+    return () => {
+      if (unsubBooks) unsubBooks();
+      if (unsubLoans) unsubLoans();
+      if (unsubUsers) unsubUsers();
+    };
+  }, []);
 
   // Protected navigation handler
   const handleNavigate = (view: string) => {
@@ -108,9 +162,14 @@ export default function App() {
   };
 
   // Handle registration of a new student
-  const handleRegisterUser = (newUser: User) => {
+  const handleRegisterUser = async (newUser: User) => {
     setUsers((prev) => [newUser, ...prev]);
     setCurrentUser(newUser);
+    try {
+      await saveUserToFirestore(newUser);
+    } catch (err) {
+      console.warn('Saved user locally, syncing to Firebase:', err);
+    }
   };
 
   // Admin login success (ADMIN / ADMIN)
@@ -126,12 +185,12 @@ export default function App() {
   };
 
   // Borrow a book (Student action)
-  const handleBorrowBook = (bookId: string) => {
+  const handleBorrowBook = async (bookId: string) => {
     const book = books.find((b) => b.id === bookId);
     if (!book || book.availableCopies <= 0) return;
 
-    // Calculate due date (14 days from 2026-10-23)
-    const today = new Date('2026-10-23T04:30:00');
+    // Calculate due date (14 days from current date)
+    const today = new Date('2026-10-26T04:30:00');
     const dueDate = new Date(today);
     dueDate.setDate(dueDate.getDate() + 14);
 
@@ -146,71 +205,114 @@ export default function App() {
       renewals: 0,
     };
 
-    // Decrement available copies
-    setBooks((prev) =>
-      prev.map((b) =>
-        b.id === bookId ? { ...b, availableCopies: Math.max(0, b.availableCopies - 1) } : b
-      )
-    );
+    const updatedBook: Book = {
+      ...book,
+      availableCopies: Math.max(0, book.availableCopies - 1),
+      updatedAt: new Date().toISOString(),
+    };
 
+    // Update local state immediately for responsive UI
+    setBooks((prev) => prev.map((b) => (b.id === bookId ? updatedBook : b)));
     setLoans((prev) => [newLoan, ...prev]);
+
+    // Persist to Firebase Firestore
+    try {
+      await saveLoanToFirestore(newLoan);
+      await saveBookToFirestore(updatedBook);
+    } catch (err) {
+      console.warn('Persisted loan locally, Firebase sync:', err);
+    }
   };
 
   // Renew a loan (+7 days)
-  const handleRenewLoan = (loanId: string) => {
-    setLoans((prev) =>
-      prev.map((loan) => {
-        if (loan.id === loanId && loan.renewals < 2) {
-          const currentDue = new Date(`${loan.dueDate}T00:00:00`);
-          currentDue.setDate(currentDue.getDate() + 7);
+  const handleRenewLoan = async (loanId: string) => {
+    const loan = loans.find((l) => l.id === loanId);
+    if (!loan || loan.renewals >= 2) return;
 
-          return {
-            ...loan,
-            dueDate: currentDue.toISOString().split('T')[0],
-            renewals: loan.renewals + 1,
-            status: 'em_dia',
-          };
-        }
-        return loan;
-      })
-    );
+    const currentDue = new Date(`${loan.dueDate}T00:00:00`);
+    currentDue.setDate(currentDue.getDate() + 7);
+
+    const updatedLoan: Loan = {
+      ...loan,
+      dueDate: currentDue.toISOString().split('T')[0],
+      renewals: loan.renewals + 1,
+      status: 'em_dia',
+    };
+
+    setLoans((prev) => prev.map((l) => (l.id === loanId ? updatedLoan : l)));
+
+    try {
+      await saveLoanToFirestore(updatedLoan);
+    } catch (err) {
+      console.warn('Persisted renewal locally, Firebase sync:', err);
+    }
   };
 
   // Return a book (Can be executed by Student or Coordinator/Admin)
-  const handleReturnBook = (loanId: string) => {
+  const handleReturnBook = async (loanId: string) => {
     const loan = loans.find((l) => l.id === loanId);
     if (!loan || loan.returnedAt) return;
 
-    const returnDate = new Date('2026-10-23T04:30:00').toISOString().split('T')[0];
+    const returnDate = new Date('2026-10-26T04:30:00').toISOString().split('T')[0];
 
-    // Mark loan as returned
-    setLoans((prev) =>
-      prev.map((l) =>
-        l.id === loanId ? { ...l, returnedAt: returnDate, status: 'devolvido' } : l
-      )
-    );
+    const updatedLoan: Loan = {
+      ...loan,
+      returnedAt: returnDate,
+      status: 'devolvido',
+    };
 
-    // Increment available copies on the book
-    setBooks((prev) =>
-      prev.map((b) =>
-        b.id === loan.bookId ? { ...b, availableCopies: Math.min(b.totalCopies, b.availableCopies + 1) } : b
-      )
-    );
+    const book = books.find((b) => b.id === loan.bookId);
+    const updatedBook: Book | null = book
+      ? {
+          ...book,
+          availableCopies: Math.min(book.totalCopies, book.availableCopies + 1),
+          updatedAt: new Date().toISOString(),
+        }
+      : null;
+
+    setLoans((prev) => prev.map((l) => (l.id === loanId ? updatedLoan : l)));
+    if (updatedBook) {
+      setBooks((prev) => prev.map((b) => (b.id === loan.bookId ? updatedBook : b)));
+    }
+
+    try {
+      await saveLoanToFirestore(updatedLoan);
+      if (updatedBook) {
+        await saveBookToFirestore(updatedBook);
+      }
+    } catch (err) {
+      console.warn('Persisted return locally, Firebase sync:', err);
+    }
   };
 
   // CRUD Books
-  const handleAddBook = (newBook: Book) => {
+  const handleAddBook = async (newBook: Book) => {
     setBooks((prev) => [newBook, ...prev]);
+    try {
+      await saveBookToFirestore(newBook);
+    } catch (err) {
+      console.warn('Book saved locally, Firebase sync:', err);
+    }
   };
 
-  const handleUpdateBook = (updatedBook: Book) => {
+  const handleUpdateBook = async (updatedBook: Book) => {
     setBooks((prev) =>
       prev.map((b) => (b.id === updatedBook.id ? updatedBook : b))
     );
+    try {
+      await saveBookToFirestore(updatedBook);
+    } catch (err) {
+      console.warn('Book updated locally, Firebase sync:', err);
+    }
   };
 
-  const handleDeleteBook = (bookId: string) => {
+  const handleDeleteBook = async (bookId: string) => {
     setBooks((prev) => prev.filter((b) => b.id !== bookId));
+    try {
+      await deleteBookFromFirestore(bookId);
+    } catch (err) {
+      console.warn('Book deleted locally, Firebase sync:', err);
+    }
   };
 
   // Counts for header badges
@@ -219,18 +321,18 @@ export default function App() {
   ).length;
 
   const totalOverdueLoansCount = loans.filter(
-    (l) => l.returnedAt === null && l.dueDate < '2026-10-23'
+    (l) => l.returnedAt === null && l.dueDate < '2026-10-26'
   ).length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#071324] text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#0F0E0C] text-stone-100 font-sans selection:bg-emerald-600 selection:text-white">
       {/* Institutional Top Header */}
       <Header
         currentUser={currentUser}
         isAdmin={isAdmin}
         onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
         onAdminLogout={handleAdminLogout}
-        onOpenSupabase={() => setIsSupabaseOpen(true)}
+        onOpenFirebase={() => setIsFirebaseOpen(true)}
         onOpenAuth={handleOpenAuth}
         currentView={currentView}
         onNavigate={handleNavigate}
@@ -272,15 +374,15 @@ export default function App() {
               onReturnBook={handleReturnBook}
             />
           ) : (
-            <div className="bg-[#0A192F] border border-slate-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
+            <div className="bg-[#181715] border border-stone-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
               <Lock className="w-12 h-12 text-amber-400 mx-auto" />
               <h2 className="text-xl font-bold text-white">Acesso Restrito à Coordenadora</h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-stone-400">
                 Esta área requer autenticação com as credenciais administrativas <strong>ADMIN</strong> / <strong>ADMIN</strong>.
               </p>
               <button
                 onClick={() => setIsAdminLoginOpen(true)}
-                className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
               >
                 Fazer Login de Administrador (ADMIN / ADMIN)
               </button>
@@ -298,15 +400,15 @@ export default function App() {
               onReturnBook={handleReturnBook}
             />
           ) : (
-            <div className="bg-[#0A192F] border border-slate-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
+            <div className="bg-[#181715] border border-stone-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
               <Lock className="w-12 h-12 text-amber-400 mx-auto" />
               <h2 className="text-xl font-bold text-white">Painel da Coordenadora</h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-stone-400">
                 Acesse com usuário <strong>ADMIN</strong> e senha <strong>ADMIN</strong> para gerenciar o acervo e a circulação de livros.
               </p>
               <button
                 onClick={() => setIsAdminLoginOpen(true)}
-                className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
               >
                 Fazer Login de Administrador (ADMIN / ADMIN)
               </button>
@@ -324,15 +426,15 @@ export default function App() {
               onDeleteBook={handleDeleteBook}
             />
           ) : (
-            <div className="bg-[#0A192F] border border-slate-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
+            <div className="bg-[#181715] border border-stone-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
               <Lock className="w-12 h-12 text-amber-400 mx-auto" />
               <h2 className="text-xl font-bold text-white">Gestão do Acervo Bibliográfico</h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-stone-400">
                 Faça login para cadastrar, editar ou remover títulos do Colégio Unidade Polo.
               </p>
               <button
                 onClick={() => setIsAdminLoginOpen(true)}
-                className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
               >
                 Fazer Login de Administrador (ADMIN / ADMIN)
               </button>
@@ -349,15 +451,15 @@ export default function App() {
               onReturnBook={handleReturnBook}
             />
           ) : (
-            <div className="bg-[#0A192F] border border-slate-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
+            <div className="bg-[#181715] border border-stone-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
               <Lock className="w-12 h-12 text-amber-400 mx-auto" />
               <h2 className="text-xl font-bold text-white">Circulação Geral de Empréstimos</h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-stone-400">
                 Faça login para acompanhar o status de todos os exemplares da escola.
               </p>
               <button
                 onClick={() => setIsAdminLoginOpen(true)}
-                className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
               >
                 Fazer Login de Administrador (ADMIN / ADMIN)
               </button>
@@ -385,20 +487,23 @@ export default function App() {
         onLoginSuccess={handleAdminLoginSuccess}
       />
 
-      {/* Supabase PostgreSQL Configuration Modal */}
-      <SupabaseModal
-        isOpen={isSupabaseOpen}
-        onClose={() => setIsSupabaseOpen(false)}
+      {/* Firebase Cloud Firestore Modal (Status & Architecture info, zero API key form) */}
+      <FirebaseModal
+        isOpen={isFirebaseOpen}
+        onClose={() => setIsFirebaseOpen(false)}
+        booksCount={books.length}
+        loansCount={loans.length}
+        usersCount={users.length}
       />
 
       {/* Institutional School Footer */}
-      <footer className="border-t border-slate-800 bg-[#050E1A] text-slate-400 mt-auto py-8">
+      <footer className="border-t border-stone-800 bg-[#11100E] text-stone-400 mt-auto py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs">
           <div className="flex items-center gap-3">
             <ColegioPoloLogo size="sm" showText={false} />
             <div>
               <p className="font-extrabold text-white text-sm">Colégio Unidade Polo</p>
-              <p className="text-slate-400 text-xs">Biblioteca Escolar · Sistema de Gestão do Conhecimento</p>
+              <p className="text-stone-400 text-xs">Biblioteca Escolar · Sistema de Gestão do Conhecimento</p>
             </div>
           </div>
 
@@ -417,7 +522,7 @@ export default function App() {
             </button>
             <button
               onClick={() => handleOpenAuth('register')}
-              className="hover:text-blue-400 text-blue-400 transition-colors cursor-pointer flex items-center gap-1 font-semibold"
+              className="hover:text-emerald-400 text-emerald-400 transition-colors cursor-pointer flex items-center gap-1 font-semibold"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>Criar Conta Aluno</span>
@@ -430,11 +535,11 @@ export default function App() {
               <span>Login Aluno</span>
             </button>
             <button
-              onClick={() => setIsSupabaseOpen(true)}
-              className="hover:text-emerald-400 text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
+              onClick={() => setIsFirebaseOpen(true)}
+              className="hover:text-amber-400 text-amber-400 transition-colors cursor-pointer flex items-center gap-1 font-medium"
             >
-              <Database className="w-3.5 h-3.5" />
-              <span>Supabase DB</span>
+              <Flame className="w-3.5 h-3.5" />
+              <span>Firebase Firestore</span>
             </button>
             {isAdmin ? (
               <button

@@ -148,17 +148,17 @@ CREATE INDEX idx_loans_status ON loans(status);`;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+      <div className="bg-[#181715] rounded-2xl border border-stone-800 p-6 sm:p-8 shadow-xs space-y-4 text-stone-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-800 pb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-sky-50 text-sky-600">
+            <div className="p-2.5 rounded-xl bg-[#11100E] text-emerald-400 border border-emerald-500/30">
               <Database className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">
+              <h2 className="text-xl font-bold text-white">
                 Arquitetura de Banco de Dados Relacional
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500">
+              <p className="text-xs sm:text-sm text-stone-400">
                 Prisma ORM, schemas PostgreSQL, chaves estrangeiras e índices otimizados.
               </p>
             </div>
@@ -166,41 +166,41 @@ CREATE INDEX idx_loans_status ON loans(status);`;
 
           <button
             onClick={() => copyToClipboard(activeTab === 'prisma' ? prismaSchemaCode : sqlDdlCode)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold transition-colors self-start sm:self-center"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#11100E] hover:bg-stone-800 text-stone-200 border border-stone-700 rounded-lg text-xs font-semibold transition-colors self-start sm:self-center cursor-pointer"
           >
-            {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copiado!' : 'Copiar Código'}</span>
           </button>
         </div>
 
         {/* Tab switcher */}
-        <div className="flex items-center gap-2 border-b border-slate-200 text-xs font-medium">
+        <div className="flex items-center gap-2 border-b border-stone-800 text-xs font-medium">
           <button
             onClick={() => setActiveTab('prisma')}
-            className={`pb-2.5 px-1 border-b-2 transition-colors ${
+            className={`pb-2.5 px-1 border-b-2 transition-colors cursor-pointer ${
               activeTab === 'prisma'
-                ? 'border-sky-600 text-sky-600 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-emerald-500 text-emerald-400 font-bold'
+                : 'border-transparent text-stone-400 hover:text-white'
             }`}
           >
             schema.prisma
           </button>
           <button
             onClick={() => setActiveTab('sql')}
-            className={`pb-2.5 px-1 border-b-2 transition-colors ${
+            className={`pb-2.5 px-1 border-b-2 transition-colors cursor-pointer ${
               activeTab === 'sql'
-                ? 'border-sky-600 text-sky-600 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-emerald-500 text-emerald-400 font-bold'
+                : 'border-transparent text-stone-400 hover:text-white'
             }`}
           >
             PostgreSQL DDL (SQL Puro)
           </button>
           <button
             onClick={() => setActiveTab('instructions')}
-            className={`pb-2.5 px-1 border-b-2 transition-colors ${
+            className={`pb-2.5 px-1 border-b-2 transition-colors cursor-pointer ${
               activeTab === 'instructions'
-                ? 'border-sky-600 text-sky-600 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-emerald-500 text-emerald-400 font-bold'
+                : 'border-transparent text-stone-400 hover:text-white'
             }`}
           >
             Instruções de Instalação & Execução
@@ -210,7 +210,7 @@ CREATE INDEX idx_loans_status ON loans(status);`;
         {/* Content */}
         {activeTab === 'prisma' && (
           <div className="relative">
-            <pre className="p-4 bg-slate-950 text-slate-100 rounded-xl overflow-x-auto text-xs font-mono leading-relaxed max-h-[500px]">
+            <pre className="p-4 bg-[#11100E] text-stone-200 border border-stone-800 rounded-xl overflow-x-auto text-xs font-mono leading-relaxed max-h-[500px]">
               {prismaSchemaCode}
             </pre>
           </div>
@@ -218,41 +218,41 @@ CREATE INDEX idx_loans_status ON loans(status);`;
 
         {activeTab === 'sql' && (
           <div className="relative">
-            <pre className="p-4 bg-slate-950 text-slate-100 rounded-xl overflow-x-auto text-xs font-mono leading-relaxed max-h-[500px]">
+            <pre className="p-4 bg-[#11100E] text-stone-200 border border-stone-800 rounded-xl overflow-x-auto text-xs font-mono leading-relaxed max-h-[500px]">
               {sqlDdlCode}
             </pre>
           </div>
         )}
 
         {activeTab === 'instructions' && (
-          <div className="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-              <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-sky-600" />
+          <div className="space-y-4 text-xs sm:text-sm text-stone-300 leading-relaxed">
+            <div className="p-4 bg-[#11100E] rounded-xl border border-stone-800 space-y-2">
+              <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-emerald-400" />
                 <span>Como rodar as migrações no PostgreSQL local ou em nuvem</span>
               </h4>
-              <p className="text-xs text-slate-600">
-                1. Configure sua variável de ambiente no arquivo <code className="font-mono bg-white px-1.5 py-0.5 rounded border">.env</code>:
+              <p className="text-xs text-stone-400">
+                1. Configure sua variável de ambiente no arquivo <code className="font-mono bg-[#181715] px-1.5 py-0.5 rounded border border-stone-700">.env</code>:
               </p>
-              <pre className="p-2.5 bg-slate-900 text-sky-300 rounded text-xs font-mono">
+              <pre className="p-2.5 bg-black/60 text-emerald-300 rounded text-xs font-mono border border-stone-800">
                 DATABASE_URL="postgresql://usuario:senha@localhost:5432/biblioteca_db?schema=public"
               </pre>
-              <p className="text-xs text-slate-600 pt-1">
+              <p className="text-xs text-stone-400 pt-1">
                 2. Execute o comando de migração do Prisma:
               </p>
-              <pre className="p-2.5 bg-slate-900 text-emerald-300 rounded text-xs font-mono">
+              <pre className="p-2.5 bg-black/60 text-emerald-300 rounded text-xs font-mono border border-stone-800">
                 npx prisma migrate dev --name init
               </pre>
-              <p className="text-xs text-slate-600 pt-1">
+              <p className="text-xs text-stone-400 pt-1">
                 3. Popule o banco com o seed de dados escolares:
               </p>
-              <pre className="p-2.5 bg-slate-900 text-emerald-300 rounded text-xs font-mono">
+              <pre className="p-2.5 bg-black/60 text-emerald-300 rounded text-xs font-mono border border-stone-800">
                 npx prisma db seed
               </pre>
             </div>
 
-            <div className="p-4 bg-sky-50/60 rounded-xl border border-sky-200 space-y-1.5 text-xs text-sky-950">
-              <h5 className="font-bold text-sky-900 text-sm">Garantias de Integridade Relacional</h5>
+            <div className="p-4 bg-emerald-950/20 rounded-xl border border-emerald-500/30 space-y-1.5 text-xs text-stone-300">
+              <h5 className="font-bold text-emerald-300 text-sm">Garantias de Integridade Relacional</h5>
               <p>• <strong>Índices:</strong> Criados em <code className="font-mono">title</code>, <code className="font-mono">author</code>, <code className="font-mono">genre</code> e nas chaves estrangeiras <code className="font-mono">user_id</code> e <code className="font-mono">book_id</code> para buscas sub-milissegundo.</p>
               <p>• <strong>Controle Concorrente:</strong> Cada empréstimo decrementa atomicamente o campo <code className="font-mono">available_copies</code> e cada devolução o incrementa.</p>
             </div>

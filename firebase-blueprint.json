@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "Book": {
+      "title": "Book",
+      "description": "Exemplar de livro do acervo do Colégio Unidade Polo",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "author": { "type": "string", "maxLength": 150 },
+        "isbn": { "type": "string", "maxLength": 30 },
+        "genre": { "type": "string", "maxLength": 80 },
+        "publicationYear": { "type": "number" },
+        "description": { "type": "string", "maxLength": 2000 },
+        "quote": { "type": "string", "maxLength": 500 },
+        "badge": { "type": "string", "maxLength": 80 },
+        "coverUrl": { "type": "string", "maxLength": 500 },
+        "coverGradient": { "type": "string", "maxLength": 100 },
+        "location": { "type": "string", "maxLength": 100 },
+        "totalCopies": { "type": "number" },
+        "availableCopies": { "type": "number" },
+        "pages": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 60 },
+        "updatedAt": { "type": "string", "maxLength": 60 }
+      },
+      "required": ["id", "title", "author", "isbn", "genre", "totalCopies", "availableCopies"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Perfil de aluno ou coordenadora da biblioteca",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 150 },
+        "email": { "type": "string", "maxLength": 150 },
+        "role": { "type": "string", "enum": ["student", "coordinator", "admin"] },
+        "matricula": { "type": "string", "maxLength": 50 },
+        "turma": { "type": "string", "maxLength": 50 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "createdAt": { "type": "string", "maxLength": 60 }
+      },
+      "required": ["id", "name", "email", "role", "matricula"]
+    },
+    "Loan": {
+      "title": "Loan",
+      "description": "Registro de empréstimo de livro para aluno",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "bookId": { "type": "string", "maxLength": 128 },
+        "borrowedAt": { "type": "string", "maxLength": 30 },
+        "dueDate": { "type": "string", "maxLength": 30 },
+        "returnedAt": { "type": "string", "maxLength": 30 },
+        "status": { "type": "string", "enum": ["em_dia", "vence_em_breve", "atrasado", "devolvido"] },
+        "renewals": { "type": "number" }
+      },
+      "required": ["id", "userId", "bookId", "borrowedAt", "dueDate", "status", "renewals"]
+    }
+  },
+  "firestore": {
+    "/books/{bookId}": {
+      "schema": "Book",
+      "description": "Catálogo de livros da biblioteca do Colégio Unidade Polo"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Contas de alunos e coordenadores cadastrados"
+    },
+    "/loans/{loanId}": {
+      "schema": "Loan",
+      "description": "Histórico e empréstimos ativos de livros"
+    }
+  }
+}

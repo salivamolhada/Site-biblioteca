@@ -2,17 +2,17 @@
 
 @layer base {
   :root {
-    --bg-primary: #071324;
-    --bg-card: #0A192F;
-    --bg-card-hover: #0F2444;
-    --accent-blue: #2563EB;
-    --accent-blue-hover: #1D4ED8;
-    --accent-amber: #F59E0B;
+    --bg-primary: #0F0E0C;
+    --bg-card: #181715;
+    --bg-card-hover: #22201D;
+    --accent-emerald: #059669;
+    --accent-emerald-hover: #047857;
+    --accent-amber: #D97706;
   }
 
   body {
-    background-color: #071324;
-    color: #F8FAFC;
+    background-color: #0F0E0C;
+    color: #F5F5F4;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
@@ -24,12 +24,12 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #071324;
+  background: #0F0E0C;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #292524;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2563EB;
+  background: #059669;
 }

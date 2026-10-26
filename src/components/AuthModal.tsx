@@ -113,21 +113,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-[#0D1B2A] border border-slate-700 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 text-white relative">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-[#181715] border border-stone-700 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 text-stone-100 relative">
         {/* Header with Colégio Polo Logo & Close Button */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between border-b border-stone-800 pb-4">
           <ColegioPoloLogo size="sm" />
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+            className="text-stone-400 hover:text-white p-1.5 rounded-xl hover:bg-stone-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Mode Switcher: Login vs Criar Conta */}
-        <div className="grid grid-cols-2 gap-2 bg-[#0A1628] p-1.5 rounded-2xl text-xs font-semibold border border-slate-800">
+        <div className="grid grid-cols-2 gap-2 bg-[#11100E] p-1.5 rounded-2xl text-xs font-semibold border border-stone-800">
           <button
             type="button"
             onClick={() => {
@@ -137,8 +137,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`py-2.5 px-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer ${
               mode === 'login'
-                ? 'bg-blue-600 text-white font-bold shadow-md'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-emerald-600 text-white font-bold shadow-md'
+                : 'text-stone-400 hover:text-white'
             }`}
           >
             <LogIn className="w-4 h-4" />
@@ -153,8 +153,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`py-2.5 px-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer ${
               mode === 'register'
-                ? 'bg-blue-600 text-white font-bold shadow-md'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-emerald-600 text-white font-bold shadow-md'
+                : 'text-stone-400 hover:text-white'
             }`}
           >
             <UserPlus className="w-4 h-4" />
@@ -174,17 +174,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           /* ================= LOGIN MODE ================= */
           <div className="space-y-5">
             {/* Role Tab */}
-            <div className="grid grid-cols-2 gap-2 bg-[#0A1628] p-1 rounded-xl text-xs font-semibold border border-slate-800">
+            <div className="grid grid-cols-2 gap-2 bg-[#11100E] p-1 rounded-xl text-xs font-semibold border border-stone-800">
               <button
                 type="button"
                 onClick={() => setLoginRoleTab('student')}
                 className={`py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                   loginRoleTab === 'student'
-                    ? 'bg-slate-800 text-white font-bold shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-stone-800 text-white font-bold shadow-sm'
+                    : 'text-stone-400 hover:text-white'
                 }`}
               >
-                <GraduationCap className="w-4 h-4 text-blue-400" />
+                <GraduationCap className="w-4 h-4 text-emerald-400" />
                 <span>Aluno(a)</span>
               </button>
               <button
@@ -192,8 +192,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 onClick={() => setLoginRoleTab('coordinator')}
                 className={`py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                   loginRoleTab === 'coordinator'
-                    ? 'bg-slate-800 text-amber-300 font-bold shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-stone-800 text-amber-300 font-bold shadow-sm'
+                    : 'text-stone-400 hover:text-white'
                 }`}
               >
                 <ShieldCheck className="w-4 h-4 text-amber-400" />
@@ -203,7 +203,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             {/* Quick 1-click Presets for Fast Testing */}
             <div className="space-y-2">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">
                 Acesso de Teste Rápido (1 Clique):
               </span>
 
@@ -214,18 +214,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onLoginAs(studentUser);
                     onClose();
                   }}
-                  className="w-full p-3.5 bg-[#0A1628] hover:bg-slate-800/80 border border-slate-800 rounded-2xl text-left transition-all flex items-center justify-between group cursor-pointer"
+                  className="w-full p-3.5 bg-[#11100E] hover:bg-stone-800/80 border border-stone-800 rounded-2xl text-left transition-all flex items-center justify-between group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-600/30 text-blue-400 flex items-center justify-center font-bold text-sm border border-blue-500/30">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-600/25 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-500/30">
                       LO
                     </div>
                     <div>
                       <p className="font-bold text-white text-sm">{studentUser.name}</p>
-                      <p className="text-[11px] text-slate-400">{studentUser.turma} · Matrícula: {studentUser.matricula}</p>
+                      <p className="text-[11px] text-stone-400">{studentUser.turma} · Matrícula: {studentUser.matricula}</p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">
+                  <span className="text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform">
                     Entrar →
                   </span>
                 </button>
@@ -236,7 +236,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onLoginAs(coordinatorUser);
                     onClose();
                   }}
-                  className="w-full p-3.5 bg-[#0A1628] hover:bg-slate-800/80 border border-slate-800 rounded-2xl text-left transition-all flex items-center justify-between group cursor-pointer"
+                  className="w-full p-3.5 bg-[#11100E] hover:bg-stone-800/80 border border-stone-800 rounded-2xl text-left transition-all flex items-center justify-between group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm border border-amber-500/30">
@@ -255,8 +255,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             <div className="relative flex items-center justify-center">
-              <hr className="w-full border-slate-800" />
-              <span className="absolute bg-[#0D1B2A] px-3 text-[10px] uppercase font-bold tracking-widest text-slate-500">
+              <hr className="w-full border-stone-800" />
+              <span className="absolute bg-[#181715] px-3 text-[10px] uppercase font-bold tracking-widest text-stone-500">
                 ou acesse com seu e-mail
               </span>
             </div>
@@ -264,31 +264,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* Manual Form */}
             <form onSubmit={handleManualLogin} className="space-y-3.5 text-xs sm:text-sm">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">E-mail Institucional</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">E-mail Institucional</label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-4 h-4 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     required
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder={loginRoleTab === 'student' ? 'aluno@escola.edu.br' : 'coordenadora@escola.edu.br'}
-                    className="w-full pl-9 pr-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Senha de Acesso</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">Senha de Acesso</label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-4 h-4 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
                     required
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                   />
                 </div>
               </div>
@@ -301,7 +301,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <LogIn className="w-4 h-4" />
                 <span>Entrar no Sistema</span>
@@ -312,48 +312,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           /* ================= REGISTER MODE ================= */
           <form onSubmit={handleRegister} className="space-y-3.5 text-xs sm:text-sm">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Nome Completo do Aluno *</label>
+              <label className="block text-xs font-semibold text-stone-300 mb-1">Nome Completo do Aluno *</label>
               <input
                 type="text"
                 required
                 value={regName}
                 onChange={(e) => setRegName(e.target.value)}
                 placeholder="Ex: Gabriela Medeiros Silva"
-                className="w-full px-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">E-mail Institucional *</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">E-mail Institucional *</label>
                 <input
                   type="email"
                   required
                   value={regEmail}
                   onChange={(e) => setRegEmail(e.target.value)}
                   placeholder="aluno@escola.edu.br"
-                  className="w-full px-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Telefone / WhatsApp</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">Telefone / WhatsApp</label>
                 <input
                   type="tel"
                   value={regPhone}
                   onChange={(e) => setRegPhone(e.target.value)}
                   placeholder="(11) 98765-4321"
-                  className="w-full px-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Série / Turma no Colégio Unidade Polo *</label>
+              <label className="block text-xs font-semibold text-stone-300 mb-1">Série / Turma no Colégio Unidade Polo *</label>
               <select
                 value={regTurma}
                 onChange={(e) => setRegTurma(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm cursor-pointer"
               >
                 <option value="6º Ano Fundamental">6º Ano · Ensino Fundamental</option>
                 <option value="7º Ano Fundamental">7º Ano · Ensino Fundamental</option>
@@ -367,26 +367,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Criar Senha *</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">Criar Senha *</label>
                 <input
                   type="password"
                   required
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
                   placeholder="Mínimo 4 caracteres"
-                  className="w-full px-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Confirmar Senha *</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">Confirmar Senha *</label>
                 <input
                   type="password"
                   required
                   value={regConfirmPassword}
                   onChange={(e) => setRegConfirmPassword(e.target.value)}
                   placeholder="Repita a senha"
-                  className="w-full px-3.5 py-2.5 bg-[#0A1628] border border-slate-700 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3.5 py-2.5 bg-[#11100E] border border-stone-700 rounded-xl text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                 />
               </div>
             </div>
@@ -399,7 +399,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer mt-2"
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer mt-2"
             >
               <UserPlus className="w-4 h-4" />
               <span>Concluir Cadastro & Acessar Biblioteca</span>
