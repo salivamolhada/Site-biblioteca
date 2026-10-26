@@ -49,7 +49,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <button
+            onClick={() => onNavigate('admin-users')}
+            className="px-4 py-2 bg-[#11100E] hover:bg-stone-800 text-stone-200 border border-stone-700/80 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+          >
+            <Users className="w-4 h-4 text-emerald-400" />
+            <span>Alunos ({users.filter((u) => u.role === 'student').length})</span>
+          </button>
           <button
             onClick={() => onNavigate('admin-books')}
             className="px-4 py-2 bg-[#11100E] hover:bg-stone-800 text-stone-200 border border-stone-700/80 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
@@ -103,13 +110,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <span className="text-[11px] text-rose-300 mt-0.5 block">Cobrança pendente</span>
         </div>
 
-        <div className="bg-[#181715] p-5 rounded-2xl border border-stone-800 shadow-xs col-span-2 lg:col-span-1">
+        <div
+          onClick={() => onNavigate('admin-users')}
+          className="bg-[#181715] p-5 rounded-2xl border border-stone-800 hover:border-emerald-500/50 shadow-xs col-span-2 lg:col-span-1 cursor-pointer transition-colors group"
+        >
           <div className="flex items-center justify-between text-stone-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Alunos Ativos</span>
-            <Users className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-semibold uppercase tracking-wider group-hover:text-emerald-400 transition-colors">
+              Alunos Ativos
+            </span>
+            <Users className="w-4 h-4 text-emerald-400" />
           </div>
           <p className="text-2xl sm:text-3xl font-black text-white mt-2 font-mono tabular-nums">{studentsCount}</p>
-          <span className="text-[11px] text-stone-400 mt-0.5 block">Usuários no sistema</span>
+          <span className="text-[11px] text-emerald-400 mt-0.5 flex items-center justify-between">
+            <span>Ver todos no Firebase</span>
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+          </span>
         </div>
       </div>
 
@@ -220,6 +235,61 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               Gerenciar Devoluções e Renovações
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Sincronização de Alunos (Visão Geral de Contas Criadas nos Dispositivos) */}
+      <div className="bg-[#181715] border border-stone-800 rounded-2xl p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-emerald-400" />
+            <div>
+              <h2 className="text-base font-bold text-white">
+                Alunos Cadastrados na Base de Dados ({users.filter((u) => u.role === 'student').length})
+              </h2>
+              <p className="text-xs text-stone-400">
+                Sincronizados em tempo real através do Google Cloud Firestore entre todos os dispositivos.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigate('admin-users')}
+            className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+          >
+            <span>Ver todos e gerenciar</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {users
+            .filter((u) => u.role === 'student')
+            .map((student) => {
+              const activeCount = loans.filter((l) => l.userId === student.id && l.returnedAt === null).length;
+              return (
+                <div
+                  key={student.id}
+                  onClick={() => onNavigate('admin-users')}
+                  className="p-3.5 rounded-xl bg-[#11100E] border border-stone-800 hover:border-emerald-500/40 transition-colors cursor-pointer space-y-1.5"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                      {student.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-white text-xs truncate">{student.name}</p>
+                      <p className="text-[10px] text-stone-400 font-mono truncate">{student.matricula}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-stone-800/80">
+                    <span className="truncate max-w-[130px]">{student.turma || 'Ensino Médio'}</span>
+                    <span className="text-emerald-400 font-mono text-[10px]">
+                      {activeCount > 0 ? `${activeCount} livro(s)` : 'Sem livros'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>

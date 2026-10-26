@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../types';
-import { ShieldCheck, Flame, LogIn, Lock, LogOut, BookOpen, AlertTriangle, UserPlus, Library } from 'lucide-react';
+import { ShieldCheck, Flame, LogIn, Lock, LogOut, BookOpen, AlertTriangle, UserPlus, Library, Bell, Users, ShieldAlert } from 'lucide-react';
 import { ColegioPoloLogo } from './ColegioPoloLogo';
 
 interface HeaderProps {
@@ -10,6 +10,8 @@ interface HeaderProps {
   onAdminLogout: () => void;
   onOpenFirebase: () => void;
   onOpenAuth: (mode?: 'login' | 'register') => void;
+  onOpenSecurity?: () => void;
+  securityAlertCount?: number;
   currentView: string;
   onNavigate: (view: string) => void;
   activeLoansCount: number;
@@ -23,6 +25,8 @@ export const Header: React.FC<HeaderProps> = ({
   onAdminLogout,
   onOpenFirebase,
   onOpenAuth,
+  onOpenSecurity,
+  securityAlertCount = 0,
   currentView,
   onNavigate,
   activeLoansCount,
@@ -105,6 +109,18 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
 
                 <button
+                  onClick={() => onNavigate('admin-users')}
+                  className={`transition-colors py-1 flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
+                    currentView === 'admin-users'
+                      ? 'text-amber-400 font-semibold border-b-2 border-amber-500'
+                      : 'text-stone-400 hover:text-stone-200'
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Alunos Cadastrados</span>
+                </button>
+
+                <button
                   onClick={() => onNavigate('admin-loans')}
                   className={`transition-colors py-1 flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
                     currentView === 'admin-loans'
@@ -137,6 +153,26 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Zone 3: Primary Action & Authentication Deck */}
           <div className="flex items-center gap-3 shrink-0">
+            {/* Security notification bell */}
+            {onOpenSecurity && (
+              <button
+                onClick={onOpenSecurity}
+                className="relative p-2 rounded-lg bg-stone-900/90 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-800 transition-colors cursor-pointer"
+                title="Histórico de logins e notificações de segurança"
+              >
+                {securityAlertCount > 0 ? (
+                  <ShieldAlert className="w-4 h-4 text-amber-400 animate-pulse" />
+                ) : (
+                  <Bell className="w-4 h-4 text-stone-400" />
+                )}
+                {securityAlertCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-mono text-[10px] font-bold flex items-center justify-center animate-bounce">
+                    {securityAlertCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             {/* Database indicator (subtle, non-distracting) */}
             <button
               onClick={onOpenFirebase}

@@ -56,6 +56,22 @@
         "renewals": { "type": "number" }
       },
       "required": ["id", "userId", "bookId", "borrowedAt", "dueDate", "status", "renewals"]
+    },
+    "LoginActivity": {
+      "title": "LoginActivity",
+      "description": "Registro de eventos de login e alertas de segurança de acesso",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 150 },
+        "userEmail": { "type": "string", "maxLength": 150 },
+        "device": { "type": "string", "maxLength": 200 },
+        "sessionId": { "type": "string", "maxLength": 128 },
+        "timestamp": { "type": "string", "maxLength": 60 },
+        "status": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "userId", "userName", "userEmail", "device", "sessionId", "timestamp"]
     }
   },
   "firestore": {
@@ -70,6 +86,10 @@
     "/loans/{loanId}": {
       "schema": "Loan",
       "description": "Histórico e empréstimos ativos de livros"
+    },
+    "/login_activities/{activityId}": {
+      "schema": "LoginActivity",
+      "description": "Logs de acessos e notificações de login entre dispositivos"
     }
   }
 }

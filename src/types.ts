@@ -54,3 +54,15 @@ export interface LibraryMetrics {
   overdueLoans: number;
   activeUsers: number;
 }
+
+export interface LoginActivity {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  device: string;
+  sessionId: string;
+  timestamp: string;
+  status: string;
+  location?: string;
+}

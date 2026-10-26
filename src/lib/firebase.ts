@@ -12,7 +12,7 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
-import { Book, Loan, User } from '../types';
+import { Book, Loan, User, LoginActivity } from '../types';
 
 // Initialize Firebase App
 export const app = initializeApp(firebaseConfig);
@@ -223,4 +223,124 @@ export async function seedInitialFirestoreData(
   } catch (err) {
     console.warn('Initial seeding bypassed or already initialized:', err);
   }
+}
+
+// Get users directly
+export async function getUsersFromFirestore(): Promise<User[]> {
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    const items: User[] = [];
+    snap.forEach((docSnap) => items.push(docSnap.data() as User));
+    return items;
+  } catch (err) {
+    console.warn('Failed to fetch users from Firestore:', err);
+    return [];
+  }
+}
+
+// Get books directly
+export async function getBooksFromFirestore(): Promise<Book[]> {
+  try {
+    const snap = await getDocs(collection(db, 'books'));
+    const items: Book[] = [];
+    snap.forEach((docSnap) => items.push(docSnap.data() as Book));
+    return items;
+  } catch (err) {
+    console.warn('Failed to fetch books from Firestore:', err);
+    return [];
+  }
+}
+
+// Get loans directly
+export async function getLoansFromFirestore(): Promise<Loan[]> {
+  try {
+    const snap = await getDocs(collection(db, 'loans'));
+    const items: Loan[] = [];
+    snap.forEach((docSnap) => items.push(docSnap.data() as Loan));
+    return items;
+  } catch (err) {
+    console.warn('Failed to fetch loans from Firestore:', err);
+    return [];
+  }
+}
+
+// Helpers for Session and Device
+export function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return 'server_session';
+  let sessId = sessionStorage.getItem('polo_session_id_v2');
+  if (!sessId) {
+    sessId = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    sessionStorage.setItem('polo_session_id_v2', sessId);
+  }
+  return sessId;
+}
+
+export function getDeviceDescription(): string {
+  if (typeof navigator === 'undefined') return 'Navegador Web';
+  const ua = navigator.userAgent;
+  let browser = 'Navegador';
+  if (ua.includes('Firefox')) browser = 'Firefox';
+  else if (ua.includes('Edg/')) browser = 'Edge';
+  else if (ua.includes('Chrome')) browser = 'Chrome';
+  else if (ua.includes('Safari')) browser = 'Safari';
+
+  let os = 'Dispositivo';
+  if (/Android/i.test(ua)) os = 'Android Mobile';
+  else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iPhone/iPad';
+  else if (/Windows/i.test(ua)) os = 'Windows PC';
+  else if (/Mac/i.test(ua)) os = 'Mac';
+  else if (/Linux/i.test(ua)) os = 'Linux';
+
+  return `${browser} em ${os}`;
+}
+
+// Record login event in Firestore
+export async function recordUserLogin(
+  user: User,
+  sessionId?: string,
+  device?: string
+): Promise<LoginActivity | null> {
+  const currentSessionId = sessionId || getOrCreateSessionId();
+  const currentDevice = device || getDeviceDescription();
+  const loginRecord: LoginActivity = {
+    id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    userId: user.id,
+    userName: user.name,
+    userEmail: user.email,
+    device: currentDevice,
+    sessionId: currentSessionId,
+    timestamp: new Date().toISOString(),
+    status: 'sucesso',
+    location: 'Colégio Unidade Polo (Rede Interna/Externa)',
+  };
+
+  const path = `login_activities/${loginRecord.id}`;
+  try {
+    await setDoc(doc(db, 'login_activities', loginRecord.id), loginRecord);
+    return loginRecord;
+  } catch (err) {
+    console.warn('Could not record login activity to Firestore:', err);
+    return null;
+  }
+}
+
+// Subscribe to all login activities (for Admin and Live Security Monitoring)
+export function subscribeToAllLogins(
+  onLoginsChanged: (logins: LoginActivity[]) => void
+): Unsubscribe {
+  const colRef = collection(db, 'login_activities');
+  return onSnapshot(
+    colRef,
+    (snapshot) => {
+      const items: LoginActivity[] = [];
+      snapshot.forEach((docSnap) => {
+        items.push(docSnap.data() as LoginActivity);
+      });
+      items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      onLoginsChanged(items);
+    },
+    (err) => {
+      console.warn('Login activities subscription warning:', err);
+    }
+  );
 }

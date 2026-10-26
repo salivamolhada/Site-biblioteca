@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { User, Book, Loan } from './types';
+import { User, Book, Loan, LoginActivity } from './types';
 import { seedUsers, seedBooks, seedLoans } from './data/seedData';
 import { Header } from './components/Header';
 import { StudentCatalog } from './components/StudentCatalog';
@@ -13,22 +13,30 @@ import { CoordinatorPendingLoans } from './components/CoordinatorPendingLoans';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AdminBooksCrud } from './components/AdminBooksCrud';
 import { AdminLoansManager } from './components/AdminLoansManager';
+import { AdminUsersManager } from './components/AdminUsersManager';
 import { PrismaDocsModal } from './components/PrismaDocsModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { AuthModal } from './components/AuthModal';
 import { FirebaseModal } from './components/FirebaseModal';
+import { SecurityNotificationModal } from './components/SecurityNotificationModal';
 import { ColegioPoloLogo } from './components/ColegioPoloLogo';
-import { Lock, Flame, UserPlus, LogIn } from 'lucide-react';
+import { Lock, Flame, UserPlus, LogIn, ShieldAlert, X } from 'lucide-react';
 import {
   testFirestoreConnection,
   subscribeToBooks,
   subscribeToLoans,
   subscribeToUsers,
+  subscribeToAllLogins,
   saveBookToFirestore,
   deleteBookFromFirestore,
   saveLoanToFirestore,
   saveUserToFirestore,
   seedInitialFirestoreData,
+  getUsersFromFirestore,
+  getBooksFromFirestore,
+  getLoansFromFirestore,
+  recordUserLogin,
+  getOrCreateSessionId,
 } from './lib/firebase';
 
 export default function App() {
@@ -60,6 +68,18 @@ export default function App() {
   const [loans, setLoans] = useState<Loan[]>(() => {
     const saved = localStorage.getItem('polo_library_loans_v3');
     return saved ? JSON.parse(saved) : seedLoans;
+  });
+
+  // Session & Security Activity state
+  const [sessionId] = useState<string>(() => getOrCreateSessionId());
+  const [logins, setLogins] = useState<LoginActivity[]>([]);
+  const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
+  const [dismissedAlertIds, setDismissedAlertIds] = useState<string[]>(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('polo_dismissed_alerts_v1') || '[]');
+    } catch {
+      return [];
+    }
   });
 
   // Navigation state
@@ -99,10 +119,28 @@ export default function App() {
     let unsubBooks: (() => void) | undefined;
     let unsubLoans: (() => void) | undefined;
     let unsubUsers: (() => void) | undefined;
+    let unsubLogins: (() => void) | undefined;
 
     const initFirebase = async () => {
       await testFirestoreConnection();
       await seedInitialFirestoreData(seedBooks, seedUsers, seedLoans);
+
+      // Fast early load directly from Firestore (ensures other devices are seen immediately)
+      try {
+        const [remoteUsers, remoteBooks, remoteLoans] = await Promise.all([
+          getUsersFromFirestore(),
+          getBooksFromFirestore(),
+          getLoansFromFirestore(),
+        ]);
+        if (remoteUsers.length > 0) setUsers(remoteUsers);
+        if (remoteBooks.length > 0) setBooks(remoteBooks);
+        if (remoteLoans.length > 0) setLoans(remoteLoans);
+      } catch (err) {
+        console.warn('Initial direct Firestore fetch bypassed:', err);
+      }
+
+      // Record session login for current device
+      recordUserLogin(currentUser, sessionId);
 
       // Realtime listener for Books
       unsubBooks = subscribeToBooks((remoteBooks) => {
@@ -118,11 +156,16 @@ export default function App() {
         }
       });
 
-      // Realtime listener for Users
+      // Realtime listener for Users (New accounts created on other devices reflect instantly)
       unsubUsers = subscribeToUsers((remoteUsers) => {
         if (remoteUsers.length > 0) {
           setUsers(remoteUsers);
         }
+      });
+
+      // Realtime listener for Login Activities & Security Alerts
+      unsubLogins = subscribeToAllLogins((remoteLogins) => {
+        setLogins(remoteLogins);
       });
     };
 
@@ -134,12 +177,13 @@ export default function App() {
       if (unsubBooks) unsubBooks();
       if (unsubLoans) unsubLoans();
       if (unsubUsers) unsubUsers();
+      if (unsubLogins) unsubLogins();
     };
   }, []);
 
   // Protected navigation handler
   const handleNavigate = (view: string) => {
-    const adminViews = ['admin-dashboard', 'admin-books', 'admin-loans', 'coordinator-pending'];
+    const adminViews = ['admin-dashboard', 'admin-books', 'admin-loans', 'admin-users', 'coordinator-pending'];
     if (adminViews.includes(view) && !isAdmin) {
       setIsAdminLoginOpen(true);
       return;
@@ -159,6 +203,7 @@ export default function App() {
     if (user.role === 'coordinator' || user.role === 'admin') {
       setIsAdmin(true);
     }
+    recordUserLogin(user, sessionId);
   };
 
   // Handle registration of a new student
@@ -167,6 +212,7 @@ export default function App() {
     setCurrentUser(newUser);
     try {
       await saveUserToFirestore(newUser);
+      await recordUserLogin(newUser, sessionId);
     } catch (err) {
       console.warn('Saved user locally, syncing to Firebase:', err);
     }
@@ -324,6 +370,25 @@ export default function App() {
     (l) => l.returnedAt === null && l.dueDate < '2026-10-26'
   ).length;
 
+  // Security alert calculation for logins on other devices
+  const otherDeviceLogins = logins.filter(
+    (l) => l.userId === currentUser.id && l.sessionId !== sessionId
+  );
+  const unacknowledgedSecurityAlerts = otherDeviceLogins.filter(
+    (l) => !dismissedAlertIds.includes(l.id)
+  );
+
+  const handleDismissSecurityAlerts = () => {
+    const ids = otherDeviceLogins.map((l) => l.id);
+    const updated = Array.from(new Set([...dismissedAlertIds, ...ids]));
+    setDismissedAlertIds(updated);
+    try {
+      sessionStorage.setItem('polo_dismissed_alerts_v1', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Could not save dismissed alerts:', e);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0F0E0C] text-stone-100 font-sans selection:bg-emerald-600 selection:text-white">
       {/* Institutional Top Header */}
@@ -334,11 +399,47 @@ export default function App() {
         onAdminLogout={handleAdminLogout}
         onOpenFirebase={() => setIsFirebaseOpen(true)}
         onOpenAuth={handleOpenAuth}
+        onOpenSecurity={() => setIsSecurityModalOpen(true)}
+        securityAlertCount={unacknowledgedSecurityAlerts.length}
         currentView={currentView}
         onNavigate={handleNavigate}
         activeLoansCount={userActiveLoansCount}
         overdueLoansCount={totalOverdueLoansCount}
       />
+
+      {/* Real-time Security Notification Banner (Alerts if account accessed on another device) */}
+      {unacknowledgedSecurityAlerts.length > 0 && (
+        <div className="bg-amber-950/90 border-b border-amber-500/40 text-amber-200 px-4 py-3 shadow-lg z-30">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 animate-pulse" />
+              <div>
+                <span className="font-bold text-white">Alerta de Acesso em Outro Dispositivo: </span>
+                <span>
+                  Um novo login na sua conta foi realizado em{' '}
+                  <strong className="text-amber-300 font-semibold">{unacknowledgedSecurityAlerts[0].device}</strong>{' '}
+                  às {new Date(unacknowledgedSecurityAlerts[0].timestamp).toLocaleTimeString('pt-BR')}.
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+              <button
+                onClick={() => setIsSecurityModalOpen(true)}
+                className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold border border-amber-500/40 transition-colors cursor-pointer"
+              >
+                Ver Detalhes do Acesso
+              </button>
+              <button
+                onClick={handleDismissSecurityAlerts}
+                className="px-3 py-1.5 rounded-lg bg-stone-900/90 hover:bg-stone-800 text-stone-300 transition-colors cursor-pointer"
+              >
+                Fui eu (Dispensar)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -467,6 +568,32 @@ export default function App() {
           )
         )}
 
+        {currentView === 'admin-users' && (
+          isAdmin ? (
+            <AdminUsersManager
+              users={users}
+              loans={loans}
+              logins={logins}
+              onBackToDashboard={() => setCurrentView('admin-dashboard')}
+              onAddUser={handleRegisterUser}
+            />
+          ) : (
+            <div className="bg-[#181715] border border-stone-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-xl">
+              <Lock className="w-12 h-12 text-amber-400 mx-auto" />
+              <h2 className="text-xl font-bold text-white">Gestão de Alunos & Contas</h2>
+              <p className="text-xs text-stone-400">
+                Acesse com credenciais de Coordenadora (ADMIN / ADMIN) para visualizar todas as contas cadastradas.
+              </p>
+              <button
+                onClick={() => setIsAdminLoginOpen(true)}
+                className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+              >
+                Fazer Login de Administrador (ADMIN / ADMIN)
+              </button>
+            </div>
+          )
+        )}
+
         {currentView === 'schema-docs' && <PrismaDocsModal />}
       </main>
 
@@ -494,6 +621,16 @@ export default function App() {
         booksCount={books.length}
         loansCount={loans.length}
         usersCount={users.length}
+      />
+
+      {/* Security Notification & Device Login Modal */}
+      <SecurityNotificationModal
+        isOpen={isSecurityModalOpen}
+        onClose={() => setIsSecurityModalOpen(false)}
+        currentUser={currentUser}
+        logins={logins}
+        currentSessionId={sessionId}
+        onAcknowledgeAlerts={handleDismissSecurityAlerts}
       />
 
       {/* Institutional School Footer */}
