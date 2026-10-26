@@ -8,6 +8,7 @@ interface CoordinatorPendingLoansProps {
   books: Book[];
   users: User[];
   onReturnBook: (loanId: string) => void;
+  onOpenChatWithStudent?: (userId: string, bookId?: string) => void;
 }
 
 export const CoordinatorPendingLoans: React.FC<CoordinatorPendingLoansProps> = ({
@@ -15,6 +16,7 @@ export const CoordinatorPendingLoans: React.FC<CoordinatorPendingLoansProps> = (
   books,
   users,
   onReturnBook,
+  onOpenChatWithStudent,
 }) => {
   const [filter, setFilter] = useState<'all' | 'overdue' | 'due_soon'>('overdue');
   const [search, setSearch] = useState('');
@@ -262,17 +264,25 @@ export const CoordinatorPendingLoans: React.FC<CoordinatorPendingLoansProps> = (
                   </div>
                 </div>
 
-                {/* Actions: Cobrança WhatsApp & Devolver Livro */}
-                <div className="pt-3 border-t border-stone-800 flex items-center gap-2">
+                {/* Actions: Cobrança via Chat no Sistema & WhatsApp & Devolver Livro */}
+                <div className="pt-3 border-t border-stone-800 flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => onOpenChatWithStudent?.(loan.userId, loan.bookId)}
+                    className="flex-1 py-2 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    title="Abrir chat no sistema para cobrar o livro em atraso"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Cobrar no Chat</span>
+                  </button>
+
                   <a
                     href={waUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-2 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="py-2 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     title="Enviar cobrança personalizada via WhatsApp"
                   >
-                    <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Avisar no WhatsApp</span>
+                    <span>WhatsApp</span>
                   </a>
 
                   <button

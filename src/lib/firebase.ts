@@ -12,7 +12,7 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
-import { Book, Loan, User, LoginActivity } from '../types';
+import { Book, Loan, User, LoginActivity, ChatMessage } from '../types';
 
 // Initialize Firebase App
 export const app = initializeApp(firebaseConfig);
@@ -341,6 +341,62 @@ export function subscribeToAllLogins(
     },
     (err) => {
       console.warn('Login activities subscription warning:', err);
+    }
+  );
+}
+
+// Get all chat messages directly
+export async function getMessagesFromFirestore(): Promise<ChatMessage[]> {
+  try {
+    const snap = await getDocs(collection(db, 'messages'));
+    const items: ChatMessage[] = [];
+    snap.forEach((docSnap) => items.push(docSnap.data() as ChatMessage));
+    items.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    return items;
+  } catch (err) {
+    console.warn('Failed to fetch messages from Firestore:', err);
+    return [];
+  }
+}
+
+// Save a new chat message in Firestore
+export async function saveChatMessage(message: ChatMessage): Promise<void> {
+  const path = `messages/${message.id}`;
+  try {
+    await setDoc(doc(db, 'messages', message.id), message, { merge: true });
+  } catch (err) {
+    handleFirestoreError(err, OperationType.WRITE, path);
+  }
+}
+
+// Mark a chat message as read in Firestore
+export async function markChatMessageAsRead(messageId: string): Promise<void> {
+  const path = `messages/${messageId}`;
+  try {
+    await setDoc(doc(db, 'messages', messageId), { read: true }, { merge: true });
+  } catch (err) {
+    console.warn('Could not mark message as read in Firestore:', err);
+  }
+}
+
+// Subscribe to all chat messages (Real-time updates for both Admin & Student)
+export function subscribeToMessages(
+  onMessagesChanged: (messages: ChatMessage[]) => void
+): Unsubscribe {
+  const colRef = collection(db, 'messages');
+  return onSnapshot(
+    colRef,
+    (snapshot) => {
+      const items: ChatMessage[] = [];
+      snapshot.forEach((docSnap) => {
+        items.push(docSnap.data() as ChatMessage);
+      });
+      // Sort chronologically (oldest to newest)
+      items.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      onMessagesChanged(items);
+    },
+    (err) => {
+      console.warn('Messages subscription warning:', err);
     }
   );
 }

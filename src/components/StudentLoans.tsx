@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Loan, Book, User } from '../types';
-import { Calendar, Clock, RotateCw, AlertTriangle, CheckCircle2, BookOpen, ArrowRight, Check, ArrowLeft, Shield } from 'lucide-react';
+import { Calendar, Clock, RotateCw, AlertTriangle, CheckCircle2, BookOpen, ArrowRight, Check, ArrowLeft, Shield, MessageSquare } from 'lucide-react';
 
 interface StudentLoansProps {
   loans: Loan[];
@@ -9,6 +9,7 @@ interface StudentLoansProps {
   onRenewLoan: (loanId: string) => void;
   onReturnBook: (loanId: string) => void;
   onNavigateToCatalog: () => void;
+  onOpenChat?: (bookId?: string) => void;
 }
 
 export const StudentLoans: React.FC<StudentLoansProps> = ({
@@ -18,6 +19,7 @@ export const StudentLoans: React.FC<StudentLoansProps> = ({
   onRenewLoan,
   onReturnBook,
   onNavigateToCatalog,
+  onOpenChat,
 }) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [confirmReturnModal, setConfirmReturnModal] = useState<Loan | null>(null);
@@ -227,6 +229,16 @@ export const StudentLoans: React.FC<StudentLoansProps> = ({
                     >
                       <RotateCw className="w-3.5 h-3.5" />
                       <span>Renovar ({loan.renewals}/2)</span>
+                    </button>
+
+                    {/* Chat with Library button */}
+                    <button
+                      onClick={() => onOpenChat?.(loan.bookId)}
+                      className="py-2.5 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                      title="Falar com a coordenação sobre este livro"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Chat</span>
                     </button>
                   </div>
                 </div>

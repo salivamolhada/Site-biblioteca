@@ -1,6 +1,6 @@
 import React from 'react';
 import { Book, Loan, User } from '../types';
-import { BookOpen, CheckCircle, AlertTriangle, Users, BookMarked, ArrowUpRight, Check, ArrowRight, Shield } from 'lucide-react';
+import { BookOpen, CheckCircle, AlertTriangle, Users, BookMarked, ArrowUpRight, Check, ArrowRight, Shield, MessageSquare } from 'lucide-react';
 
 interface AdminDashboardProps {
   books: Book[];
@@ -8,6 +8,7 @@ interface AdminDashboardProps {
   users: User[];
   onNavigate: (view: string) => void;
   onReturnBook: (loanId: string) => void;
+  onOpenChatWithStudent?: (userId?: string, bookId?: string) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -16,6 +17,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   users,
   onNavigate,
   onReturnBook,
+  onOpenChatWithStudent,
 }) => {
   const totalBooks = books.length;
   const totalCopies = books.reduce((sum, b) => sum + b.totalCopies, 0);
@@ -50,6 +52,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <button
+            onClick={() => onOpenChatWithStudent?.()}
+            className="px-3.5 py-2 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 border border-amber-500/40 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <MessageSquare className="w-4 h-4 text-amber-400" />
+            <span>Chat de Cobrança</span>
+          </button>
           <button
             onClick={() => onNavigate('admin-users')}
             className="px-4 py-2 bg-[#11100E] hover:bg-stone-800 text-stone-200 border border-stone-700/80 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -184,12 +193,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           {loan.dueDate}
                         </td>
                         <td className="py-3 px-3 text-right">
-                          <button
-                            onClick={() => onReturnBook(loan.id)}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] transition-colors cursor-pointer"
-                          >
-                            Baixa Imediata
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => onOpenChatWithStudent?.(loan.userId, loan.bookId)}
+                              className="px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-semibold text-[11px] border border-amber-500/40 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                              title="Enviar mensagem de cobrança pelo chat"
+                            >
+                              <MessageSquare className="w-3 h-3 text-amber-400" />
+                              <span>Cobrar</span>
+                            </button>
+                            <button
+                              onClick={() => onReturnBook(loan.id)}
+                              className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] transition-colors cursor-pointer shrink-0"
+                            >
+                              Baixa
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../types';
-import { ShieldCheck, Flame, LogIn, Lock, LogOut, BookOpen, AlertTriangle, UserPlus, Library, Bell, Users, ShieldAlert } from 'lucide-react';
+import { ShieldCheck, Flame, LogIn, Lock, LogOut, BookOpen, AlertTriangle, UserPlus, Library, Bell, Users, ShieldAlert, MessageSquare } from 'lucide-react';
 import { ColegioPoloLogo } from './ColegioPoloLogo';
 
 interface HeaderProps {
@@ -12,6 +12,8 @@ interface HeaderProps {
   onOpenAuth: (mode?: 'login' | 'register') => void;
   onOpenSecurity?: () => void;
   securityAlertCount?: number;
+  onOpenChat?: () => void;
+  unreadChatCount?: number;
   currentView: string;
   onNavigate: (view: string) => void;
   activeLoansCount: number;
@@ -27,6 +29,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAuth,
   onOpenSecurity,
   securityAlertCount = 0,
+  onOpenChat,
+  unreadChatCount = 0,
   currentView,
   onNavigate,
   activeLoansCount,
@@ -168,6 +172,25 @@ export const Header: React.FC<HeaderProps> = ({
                 {securityAlertCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-mono text-[10px] font-bold flex items-center justify-center animate-bounce">
                     {securityAlertCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* Direct Chat / Cobranças button */}
+            {onOpenChat && (
+              <button
+                onClick={onOpenChat}
+                className="relative p-2 rounded-lg bg-stone-900/90 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-800 transition-colors cursor-pointer flex items-center gap-1.5"
+                title={isAdmin ? "Canal de Cobrança e Mensagens aos Alunos" : "Chat com a Coordenação da Biblioteca"}
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-400" />
+                <span className="hidden xl:inline text-xs font-semibold text-emerald-400">
+                  {isAdmin ? 'Cobranças & Chat' : 'Chat Biblioteca'}
+                </span>
+                {unreadChatCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-bold flex items-center justify-center animate-pulse">
+                    {unreadChatCount}
                   </span>
                 )}
               </button>

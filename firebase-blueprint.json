@@ -72,6 +72,26 @@
         "status": { "type": "string", "maxLength": 50 }
       },
       "required": ["id", "userId", "userName", "userEmail", "device", "sessionId", "timestamp"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Mensagem do chat entre coordenação e alunos para cobrança e avisos de livros",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "senderId": { "type": "string", "maxLength": 128 },
+        "senderName": { "type": "string", "maxLength": 150 },
+        "senderRole": { "type": "string", "enum": ["coordinator", "student", "admin"] },
+        "recipientId": { "type": "string", "maxLength": 128 },
+        "recipientName": { "type": "string", "maxLength": 150 },
+        "bookId": { "type": "string", "maxLength": 128 },
+        "bookTitle": { "type": "string", "maxLength": 200 },
+        "text": { "type": "string", "maxLength": 2000 },
+        "timestamp": { "type": "string", "maxLength": 60 },
+        "read": { "type": "boolean" },
+        "isUrgentNotice": { "type": "boolean" }
+      },
+      "required": ["id", "senderId", "senderName", "senderRole", "recipientId", "recipientName", "text", "timestamp", "read"]
     }
   },
   "firestore": {
@@ -90,6 +110,10 @@
     "/login_activities/{activityId}": {
       "schema": "LoginActivity",
       "description": "Logs de acessos e notificações de login entre dispositivos"
+    },
+    "/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Mensagens de chat em tempo real entre coordenação e alunos"
     }
   }
 }

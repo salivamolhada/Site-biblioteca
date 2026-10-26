@@ -66,3 +66,18 @@ export interface LoginActivity {
   status: string;
   location?: string;
 }
+
+export interface ChatMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'coordinator' | 'student' | 'admin';
+  recipientId: string;
+  recipientName: string;
+  bookId?: string;
+  bookTitle?: string;
+  text: string;
+  timestamp: string;
+  read: boolean;
+  isUrgentNotice?: boolean;
+}
