@@ -231,8 +231,26 @@ export const AdminBooksCrud: React.FC<AdminBooksCrudProps> = ({
                 return (
                   <tr key={book.id} className="hover:bg-stone-800/40 transition-colors">
                     <td className="py-3 px-4">
-                      <p className="font-bold text-white text-sm font-serif">{book.title}</p>
-                      <p className="text-stone-400 text-xs">{book.author} · {book.publicationYear}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-14 rounded-md overflow-hidden bg-stone-900 border border-stone-800 shrink-0 shadow-xs relative">
+                          {book.coverUrl ? (
+                            <img
+                              src={book.coverUrl}
+                              alt={book.title}
+                              referrerPolicy="no-referrer"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className={`w-full h-full bg-gradient-to-br ${book.coverGradient} flex items-center justify-center text-[9px] font-bold text-white p-1 text-center leading-tight`}>
+                              {book.title.slice(0, 8)}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-bold text-white text-sm font-serif">{book.title}</p>
+                          <p className="text-stone-400 text-xs">{book.author} · {book.publicationYear}</p>
+                        </div>
+                      </div>
                     </td>
                     <td className="py-3 px-4">
                       <span className="px-2 py-0.5 rounded-md bg-[#11100E] text-emerald-300 border border-stone-700 text-[11px] font-medium">

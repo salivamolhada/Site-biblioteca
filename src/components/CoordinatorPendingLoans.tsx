@@ -248,18 +248,33 @@ export const CoordinatorPendingLoans: React.FC<CoordinatorPendingLoansProps> = (
                     <p className="text-xs text-stone-400 font-mono">Tel: {user?.phone || 'Não cadastrado'}</p>
                   </div>
 
-                  {/* Book info */}
-                  <div>
-                    <span className="text-[10px] font-bold text-stone-400 uppercase block mb-0.5">Livro Emprestado</span>
-                    <h3 className="font-serif font-bold text-white text-base leading-snug line-clamp-1">
-                      {book?.title || 'Título desconhecido'}
-                    </h3>
-                    <p className="text-xs text-stone-400 line-clamp-1">{book?.author}</p>
-                    <div className="mt-2 text-xs text-stone-300 flex items-center justify-between pt-2 border-t border-stone-800">
-                      <span>Data Limite:</span>
-                      <strong className={`font-mono ${isOverdue ? 'text-rose-400' : 'text-stone-200'}`}>
-                        {loan.dueDate}
-                      </strong>
+                  {/* Book info with real cover thumbnail */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-16 aspect-[3/4] relative rounded-lg overflow-hidden bg-stone-900 border border-stone-700/60 shadow-md shrink-0">
+                      {book?.coverUrl ? (
+                        <img
+                          src={book.coverUrl}
+                          alt={book.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : null}
+                      <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/40 via-black/10 to-transparent pointer-events-none" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase block mb-0.5">Livro Emprestado</span>
+                      <h3 className="font-serif font-bold text-white text-sm leading-snug line-clamp-1">
+                        {book?.title || 'Título desconhecido'}
+                      </h3>
+                      <p className="text-xs text-stone-400 line-clamp-1">{book?.author}</p>
+                      <div className="mt-1.5 text-xs text-stone-300 flex items-center justify-between pt-1 border-t border-stone-800/80">
+                        <span className="text-[11px] text-stone-400">Data Limite:</span>
+                        <strong className={`font-mono text-xs ${isOverdue ? 'text-rose-400' : 'text-stone-200'}`}>
+                          {loan.dueDate}
+                        </strong>
+                      </div>
                     </div>
                   </div>
                 </div>

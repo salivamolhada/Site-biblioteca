@@ -186,14 +186,32 @@ export const StudentLoans: React.FC<StudentLoansProps> = ({
                       </span>
                     </div>
 
-                    {/* Book title and author */}
-                    <div>
-                      <h3 className="text-base font-bold text-white leading-snug line-clamp-1">
-                        {book.title}
-                      </h3>
-                      <p className="text-xs text-stone-400 mt-0.5">
-                        {book.author} · <span className="font-mono">{book.isbn}</span>
-                      </p>
+                    {/* Book title, author and real book cover thumbnail */}
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-14 h-19 aspect-[3/4] relative rounded-lg overflow-hidden bg-stone-900 border border-stone-700/60 shadow-md shrink-0">
+                        {book.coverUrl ? (
+                          <img
+                            src={book.coverUrl}
+                            alt={`Capa de ${book.title}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : null}
+                        <div className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-r from-black/40 via-black/10 to-transparent pointer-events-none" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base font-bold text-white leading-snug line-clamp-2">
+                          {book.title}
+                        </h3>
+                        <p className="text-xs text-stone-400 mt-1 line-clamp-1">
+                          {book.author}
+                        </p>
+                        <p className="text-[11px] text-stone-500 font-mono mt-0.5">
+                          ISBN: {book.isbn}
+                        </p>
+                      </div>
                     </div>
 
                     {/* Dates highlight */}
@@ -309,18 +327,38 @@ export const StudentLoans: React.FC<StudentLoansProps> = ({
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#11100E] border border-stone-800 text-xs">
-              <p className="font-bold text-white text-sm">
-                {books.find((b) => b.id === confirmReturnModal.bookId)?.title}
-              </p>
-              <p className="text-stone-400 mt-0.5">
-                {books.find((b) => b.id === confirmReturnModal.bookId)?.author}
-              </p>
-              <div className="mt-2 pt-2 border-t border-stone-800 text-[11px] text-stone-400 flex justify-between">
-                <span>Data do Empréstimo: {confirmReturnModal.borrowedAt}</span>
-                <span className="font-semibold text-emerald-400">Devolução Imediata</span>
-              </div>
-            </div>
+            {(() => {
+              const bookToReturn = books.find((b) => b.id === confirmReturnModal.bookId);
+              return (
+                <div className="p-3.5 rounded-xl bg-[#11100E] border border-stone-800 text-xs flex items-center gap-3.5">
+                  <div className="w-12 h-16 aspect-[3/4] relative rounded-md overflow-hidden bg-stone-900 border border-stone-700/60 shadow-md shrink-0">
+                    {bookToReturn?.coverUrl ? (
+                      <img
+                        src={bookToReturn.coverUrl}
+                        alt={bookToReturn.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                    ) : null}
+                    <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/40 via-black/10 to-transparent pointer-events-none" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-white text-sm line-clamp-1">
+                      {bookToReturn?.title || 'Título da Obra'}
+                    </p>
+                    <p className="text-stone-400 mt-0.5 line-clamp-1">
+                      {bookToReturn?.author}
+                    </p>
+                    <div className="mt-2 pt-2 border-t border-stone-800 text-[11px] text-stone-400 flex justify-between">
+                      <span>Emprestado em: {confirmReturnModal.borrowedAt}</span>
+                      <span className="font-semibold text-emerald-400">Devolução Imediata</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button

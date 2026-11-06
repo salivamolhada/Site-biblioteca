@@ -267,15 +267,20 @@ export const StudentCatalog: React.FC<StudentCatalogProps> = ({
                   key={book.id}
                   className="bg-[#181715] border border-stone-800/90 hover:border-stone-700 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col group"
                 >
-                  {/* Book Cover Visual Frame */}
-                  <div className="relative aspect-[16/10] bg-stone-900 overflow-hidden flex items-center justify-center">
+                  {/* Book Cover Visual Frame (Authentic Book Aspect Ratio) */}
+                  <div className="relative aspect-[3/4] bg-[#11100E] overflow-hidden flex items-center justify-center border-b border-stone-800">
                     {book.coverUrl ? (
-                      <img
-                        src={book.coverUrl}
-                        alt={`Capa do livro ${book.title}`}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
-                      />
+                      <div className="w-full h-full relative">
+                        <img
+                          src={book.coverUrl}
+                          alt={`Capa do livro ${book.title}`}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300"
+                        />
+                        {/* Book Spine 3D Lighting Effect */}
+                        <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/40 via-black/10 to-transparent pointer-events-none" />
+                        <div className="absolute inset-y-0 left-3 w-px bg-white/10 pointer-events-none" />
+                      </div>
                     ) : (
                       <div className={`w-full h-full bg-gradient-to-br ${book.coverGradient} p-4 flex flex-col justify-end relative`}>
                         <div className="absolute inset-0 bg-black/40" />
