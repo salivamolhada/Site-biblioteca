@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Book, Loan, User } from '../types';
 import { Search, BookMarked, CheckCircle2, AlertCircle, X, MapPin, Calendar, Hash, FileText, ArrowRight, BookOpen, UserPlus, Library, Bookmark } from 'lucide-react';
+import { getBookCoverUrl, handleCoverImageError } from '../lib/imageHelper';
 
 interface StudentCatalogProps {
   books: Book[];
@@ -156,9 +157,10 @@ export const StudentCatalog: React.FC<StudentCatalogProps> = ({
           {/* Right Column: Architectural Photography */}
           <div className="lg:col-span-5 relative min-h-[260px] lg:min-h-full bg-stone-900 overflow-hidden">
             <img
-              src="/src/assets/images/emerald_academic_library_1793013158399.jpg"
+              src={getBookCoverUrl('/covers/emerald_academic_library_1793013158399.jpg')}
               alt="Salão Nobre da Biblioteca Escolar do Colégio Unidade Polo"
               referrerPolicy="no-referrer"
+              onError={handleCoverImageError}
               className="w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#181715] via-transparent to-transparent opacity-80 lg:hidden" />
@@ -272,9 +274,10 @@ export const StudentCatalog: React.FC<StudentCatalogProps> = ({
                     {book.coverUrl ? (
                       <div className="w-full h-full relative">
                         <img
-                          src={book.coverUrl}
+                          src={getBookCoverUrl(book.coverUrl)}
                           alt={`Capa do livro ${book.title}`}
                           referrerPolicy="no-referrer"
+                          onError={handleCoverImageError}
                           className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300"
                         />
                         {/* Book Spine 3D Lighting Effect */}
@@ -391,13 +394,15 @@ export const StudentCatalog: React.FC<StudentCatalogProps> = ({
             {/* Modal Header */}
             <div className="p-6 border-b border-stone-800 bg-[#11100E] flex items-start gap-4">
               {selectedBookForDetails.coverUrl && (
-                <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden border border-stone-700 shadow-md">
+                <div className="w-20 h-28 aspect-[3/4] shrink-0 rounded-lg overflow-hidden border border-stone-700 shadow-md relative">
                   <img
-                    src={selectedBookForDetails.coverUrl}
+                    src={getBookCoverUrl(selectedBookForDetails.coverUrl)}
                     alt={selectedBookForDetails.title}
                     referrerPolicy="no-referrer"
+                    onError={handleCoverImageError}
                     className="w-full h-full object-cover"
                   />
+                  <div className="absolute inset-y-0 left-0 w-2 bg-gradient-to-r from-black/40 via-black/10 to-transparent pointer-events-none" />
                 </div>
               )}
               <div className="space-y-1">

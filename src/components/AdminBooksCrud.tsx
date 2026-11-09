@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Book, Loan } from '../types';
 import { Plus, Search, Edit2, Trash2, CheckCircle2, AlertCircle, X, BookOpen, Layers } from 'lucide-react';
+import { getBookCoverUrl, handleCoverImageError } from '../lib/imageHelper';
 
 interface AdminBooksCrudProps {
   books: Book[];
@@ -235,9 +236,10 @@ export const AdminBooksCrud: React.FC<AdminBooksCrudProps> = ({
                         <div className="w-10 h-14 rounded-md overflow-hidden bg-stone-900 border border-stone-800 shrink-0 shadow-xs relative">
                           {book.coverUrl ? (
                             <img
-                              src={book.coverUrl}
+                              src={getBookCoverUrl(book.coverUrl)}
                               alt={book.title}
                               referrerPolicy="no-referrer"
+                              onError={handleCoverImageError}
                               className="w-full h-full object-cover"
                             />
                           ) : (

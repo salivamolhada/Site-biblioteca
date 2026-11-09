@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Loan, Book, User } from '../types';
 import { AlertTriangle, Clock, CheckCircle2, MessageSquare, Search, UserCheck, Filter, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
 import { ColegioPoloLogo } from './ColegioPoloLogo';
+import { getBookCoverUrl, handleCoverImageError } from '../lib/imageHelper';
 
 interface CoordinatorPendingLoansProps {
   loans: Loan[];
@@ -253,12 +254,10 @@ export const CoordinatorPendingLoans: React.FC<CoordinatorPendingLoansProps> = (
                     <div className="w-12 h-16 aspect-[3/4] relative rounded-lg overflow-hidden bg-stone-900 border border-stone-700/60 shadow-md shrink-0">
                       {book?.coverUrl ? (
                         <img
-                          src={book.coverUrl}
+                          src={getBookCoverUrl(book.coverUrl)}
                           alt={book.title}
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLElement).style.display = 'none';
-                          }}
+                          onError={handleCoverImageError}
                         />
                       ) : null}
                       <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-r from-black/40 via-black/10 to-transparent pointer-events-none" />
