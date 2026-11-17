@@ -4,12 +4,14 @@ interface ColegioPoloLogoProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
+  christmasMode?: boolean;
 }
 
 export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
   className = '',
   size = 'md',
   showText = true,
+  christmasMode = true,
 }) => {
   const sizeMap = {
     sm: { box: 34, text: 'text-sm', sub: 'text-[10px]' },
@@ -23,6 +25,19 @@ export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
     <div className={`flex items-center gap-3 select-none ${className}`}>
       {/* Official Collegiate Shield Logo */}
       <div className="relative shrink-0 flex items-center justify-center">
+        {christmasMode && (
+          <svg
+            width={current.box * 0.65}
+            height={current.box * 0.65}
+            viewBox="0 0 40 40"
+            className="absolute -top-2.5 -right-1.5 z-10 rotate-12 drop-shadow-md pointer-events-none"
+            fill="none"
+          >
+            <path d="M6 28 C10 10 25 6 33 14 C27 17 24 23 26 28 Z" fill="#DC2626" />
+            <rect x="4" y="25" width="24" height="6" rx="3" fill="#FFFFFF" />
+            <circle cx="34" cy="14" r="4" fill="#FFFFFF" />
+          </svg>
+        )}
         <svg
           width={current.box}
           height={current.box}
@@ -35,7 +50,7 @@ export const ColegioPoloLogo: React.FC<ColegioPoloLogoProps> = ({
           <path
             d="M50 4 L86 18 V52 C86 74 70 90 50 96 C30 90 14 74 14 52 V18 L50 4 Z"
             fill="#1C1917"
-            stroke="#D97706"
+            stroke={christmasMode ? '#DC2626' : '#D97706'}
             strokeWidth="3.5"
             strokeLinejoin="round"
           />

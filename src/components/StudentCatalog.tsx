@@ -10,6 +10,7 @@ interface StudentCatalogProps {
   onBorrowBook: (bookId: string) => void;
   onOpenMyLoans: () => void;
   onOpenAuth?: (mode?: 'login' | 'register') => void;
+  christmasMode?: boolean;
 }
 
 export const StudentCatalog: React.FC<StudentCatalogProps> = ({
@@ -19,6 +20,7 @@ export const StudentCatalog: React.FC<StudentCatalogProps> = ({
   onBorrowBook,
   onOpenMyLoans,
   onOpenAuth,
+  christmasMode = true,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('Todos');
@@ -90,17 +92,21 @@ export const StudentCatalog: React.FC<StudentCatalogProps> = ({
       )}
 
       {/* Hero Section: Institutional 2-Column Split */}
-      <section className="rounded-2xl border border-stone-800 bg-[#181715] overflow-hidden shadow-sm">
+      <section className={`rounded-2xl border bg-[#181715] overflow-hidden shadow-sm transition-colors ${christmasMode ? 'border-red-900/50' : 'border-stone-800'}`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
           {/* Left Column: Ethos & Stats */}
           <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
             <div className="space-y-3">
-              <div className="text-xs font-semibold text-emerald-400 tracking-wider uppercase">
-                Colégio Unidade Polo · Centro de Aprendizagem e Pesquisa
+              <div className={`text-xs font-semibold tracking-wider uppercase ${christmasMode ? 'text-amber-400' : 'text-emerald-400'}`}>
+                {christmasMode
+                  ? 'Colégio Unidade Polo · Especial de Natal na Biblioteca'
+                  : 'Colégio Unidade Polo · Centro de Aprendizagem e Pesquisa'}
               </div>
 
               <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                Acervo Bibliográfico & Circulação Escolar
+                {christmasMode
+                  ? 'Acervo Bibliográfico & Magia de Natal Escolar'
+                  : 'Acervo Bibliográfico & Circulação Escolar'}
               </h1>
 
               <p className="text-sm sm:text-base text-stone-300 leading-relaxed font-normal max-w-xl">

@@ -33,3 +33,135 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #059669;
 }
+
+/* =========================================================
+   Christmas Theme Animations (Compositor-Only Transforms)
+   ========================================================= */
+@keyframes christmasSnowFall {
+  0% {
+    transform: translate3d(0, -20px, 0);
+  }
+  50% {
+    transform: translate3d(18px, 50vh, 0);
+  }
+  100% {
+    transform: translate3d(-12px, 105vh, 0);
+  }
+}
+
+@keyframes christmasSantaFlight {
+  0% {
+    transform: translate3d(-440px, 24px, 0) scale(0.95);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  30% {
+    transform: translate3d(28vw, -12px, 0) scale(1);
+  }
+  55% {
+    transform: translate3d(58vw, 10px, 0) scale(1.02);
+  }
+  85% {
+    transform: translate3d(88vw, -16px, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(115vw, -30px, 0) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes christmasReindeerBob {
+  0%, 100% {
+    transform: translate3d(0, 0px, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, -5px, 0) rotate(-3deg);
+  }
+}
+
+@keyframes christmasGiftFall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(18px, calc(100vh - 150px), 0) rotate(var(--gift-rotate, 25deg)) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes christmasGiftLandBounce {
+  0% {
+    transform: translate3d(0, -14px, 0) scale(1.15);
+  }
+  60% {
+    transform: translate3d(0, 2px, 0) scale(0.95);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes christmasTwinkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+.christmas-snowflake {
+  animation-name: christmasSnowFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.christmas-santa-flight {
+  animation: christmasSantaFlight 10.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.christmas-reindeer-bob {
+  animation: christmasReindeerBob 0.7s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.christmas-reindeer-bob-alt {
+  animation: christmasReindeerBob 0.7s ease-in-out 0.35s infinite;
+  transform-origin: center;
+}
+
+.christmas-gift-fall {
+  animation-name: christmasGiftFall;
+  animation-timing-function: cubic-bezier(0.35, 0.1, 0.7, 0.9);
+  animation-fill-mode: forwards;
+}
+
+.christmas-gift-bounce {
+  animation: christmasGiftLandBounce 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.christmas-light-twinkle {
+  animation: christmasTwinkle 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .christmas-snowflake,
+  .christmas-santa-flight,
+  .christmas-reindeer-bob,
+  .christmas-reindeer-bob-alt,
+  .christmas-gift-fall,
+  .christmas-light-twinkle {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+

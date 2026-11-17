@@ -20,6 +20,7 @@ import { AuthModal } from './components/AuthModal';
 import { FirebaseModal } from './components/FirebaseModal';
 import { SecurityNotificationModal } from './components/SecurityNotificationModal';
 import { ColegioPoloLogo } from './components/ColegioPoloLogo';
+import { ChristmasOverlay } from './components/ChristmasOverlay';
 import { Lock, Flame, UserPlus, LogIn, ShieldAlert, X } from 'lucide-react';
 import {
   testFirestoreConnection,
@@ -92,6 +93,10 @@ export default function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState<'login' | 'register'>('login');
   const [isFirebaseOpen, setIsFirebaseOpen] = useState(false);
+
+  // Christmas theme state
+  const [christmasMode, setChristmasMode] = useState(true);
+  const [santaTriggerSignal, setSantaTriggerSignal] = useState(0);
 
   // Synchronize to localStorage as local cache
   useEffect(() => {
@@ -390,7 +395,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0F0E0C] text-stone-100 font-sans selection:bg-emerald-600 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#0F0E0C] text-stone-100 font-sans selection:bg-emerald-600 selection:text-white relative">
+      {/* Christmas Theme Animation Overlay (Santa, Reindeer, Ho Ho Ho, Falling Presents & Snowy School) */}
+      <ChristmasOverlay enabled={christmasMode} triggerFlySignal={santaTriggerSignal} />
+
       {/* Institutional Top Header */}
       <Header
         currentUser={currentUser}
@@ -405,6 +413,9 @@ export default function App() {
         onNavigate={handleNavigate}
         activeLoansCount={userActiveLoansCount}
         overdueLoansCount={totalOverdueLoansCount}
+        christmasMode={christmasMode}
+        onToggleChristmas={() => setChristmasMode((prev) => !prev)}
+        onSummonSanta={() => setSantaTriggerSignal((s) => s + 1)}
       />
 
       {/* Real-time Security Notification Banner (Alerts if account accessed on another device) */}
@@ -451,6 +462,7 @@ export default function App() {
             onBorrowBook={handleBorrowBook}
             onOpenMyLoans={() => setCurrentView('my-loans')}
             onOpenAuth={handleOpenAuth}
+            christmasMode={christmasMode}
           />
         )}
 
@@ -634,10 +646,10 @@ export default function App() {
       />
 
       {/* Institutional School Footer */}
-      <footer className="border-t border-stone-800 bg-[#11100E] text-stone-400 mt-auto py-8">
+      <footer className={`border-t border-stone-800 bg-[#11100E] text-stone-400 mt-auto pt-8 ${christmasMode ? 'pb-24' : 'pb-8'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs">
           <div className="flex items-center gap-3">
-            <ColegioPoloLogo size="sm" showText={false} />
+            <ColegioPoloLogo size="sm" showText={false} christmasMode={christmasMode} />
             <div>
               <p className="font-extrabold text-white text-sm">Colégio Unidade Polo</p>
               <p className="text-stone-400 text-xs">Biblioteca Escolar · Sistema de Gestão do Conhecimento</p>

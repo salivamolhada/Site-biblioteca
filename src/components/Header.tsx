@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../types';
-import { ShieldCheck, Flame, LogIn, Lock, LogOut, BookOpen, AlertTriangle, UserPlus, Library, Bell, Users, ShieldAlert, MessageSquare } from 'lucide-react';
+import { ShieldCheck, Flame, Lock, LogOut, BookOpen, AlertTriangle, UserPlus, Bell, Users, ShieldAlert, MessageSquare, Gift, Snowflake } from 'lucide-react';
 import { ColegioPoloLogo } from './ColegioPoloLogo';
 
 interface HeaderProps {
@@ -18,7 +18,12 @@ interface HeaderProps {
   onNavigate: (view: string) => void;
   activeLoansCount: number;
   overdueLoansCount: number;
+  christmasMode?: boolean;
+  onToggleChristmas?: () => void;
+  onSummonSanta?: () => void;
 }
+
+const STRING_LIGHT_COLORS = ['#EF4444', '#FBBF24', '#10B981', '#F59E0B'];
 
 export const Header: React.FC<HeaderProps> = ({
   currentUser,
@@ -35,9 +40,12 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate,
   activeLoansCount,
   overdueLoansCount,
+  christmasMode = true,
+  onToggleChristmas,
+  onSummonSanta,
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-[#12110F]/95 backdrop-blur-md text-stone-100 border-b border-stone-800 shadow-sm">
+    <header className={`sticky top-0 z-40 bg-[#12110F]/95 backdrop-blur-md text-stone-100 border-b shadow-sm ${christmasMode ? 'border-red-900/50' : 'border-stone-800'}`}>
       {/* Top Bar: 3-Zone Contract */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-8 h-20">
@@ -46,10 +54,10 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onNavigate(isAdmin ? 'admin-dashboard' : 'catalog')}
             className="flex items-center gap-3.5 text-left focus:outline-none cursor-pointer shrink-0 group"
           >
-            <ColegioPoloLogo size="md" />
+            <ColegioPoloLogo size="md" christmasMode={christmasMode} />
             <div className="hidden sm:block border-l border-stone-800 pl-3.5">
-              <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-widest block">
-                Biblioteca Escolar
+              <span className={`text-[11px] font-semibold uppercase tracking-widest block ${christmasMode ? 'text-red-400' : 'text-emerald-400'}`}>
+                {christmasMode ? 'Biblioteca Escolar · Edição de Natal' : 'Biblioteca Escolar'}
               </span>
               <span className="text-xs text-stone-400">
                 Sistema Integrado de Gestão do Conhecimento
@@ -156,7 +164,34 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Zone 3: Primary Action & Authentication Deck */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0">
+            {/* Christmas Mode & Summon Santa */}
+            {onToggleChristmas && (
+              <div className="flex items-center gap-1">
+                {christmasMode && onSummonSanta && (
+                  <button
+                    onClick={onSummonSanta}
+                    className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600/35 text-red-300 border border-red-500/40 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                    title="Chamar Papai Noel voando com as renas e jogando presentes!"
+                  >
+                    <Gift className="w-3.5 h-3.5 text-red-400" />
+                    <span>Papai Noel</span>
+                  </button>
+                )}
+                <button
+                  onClick={onToggleChristmas}
+                  className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+                    christmasMode
+                      ? 'bg-red-950/50 border-red-500/40 text-amber-300 hover:bg-red-900/60'
+                      : 'bg-stone-900/90 border-stone-800 text-stone-400 hover:text-white'
+                  }`}
+                  title={christmasMode ? 'Desativar Tema Natalino' : 'Ativar Tema Natalino'}
+                >
+                  <Snowflake className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
             {/* Security notification bell */}
             {onOpenSecurity && (
               <button
@@ -286,14 +321,48 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          <button
-            onClick={() => onOpenAuth('register')}
-            className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300"
-          >
-            + Criar Conta
-          </button>
+          <div className="flex items-center gap-3">
+            {christmasMode && onSummonSanta && (
+              <button
+                onClick={onSummonSanta}
+                className="text-[11px] font-bold text-red-400 hover:text-red-300 flex items-center gap-1"
+              >
+                <Gift className="w-3 h-3" />
+                <span>Noel</span>
+              </button>
+            )}
+            <button
+              onClick={() => onOpenAuth('register')}
+              className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300"
+            >
+              + Criar Conta
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Festive Twinkling Christmas String Lights Strip */}
+      {christmasMode && (
+        <div
+          aria-hidden="true"
+          className="w-full h-2.5 overflow-hidden flex items-center justify-around px-2 bg-[#141110] border-t border-stone-800/70"
+        >
+          {Array.from({ length: 28 }).map((_, idx) => {
+            const color = STRING_LIGHT_COLORS[idx % STRING_LIGHT_COLORS.length];
+            return (
+              <span
+                key={idx}
+                className="w-1.5 h-1.5 rounded-full christmas-light-twinkle shrink-0"
+                style={{
+                  backgroundColor: color,
+                  boxShadow: `0 0 6px ${color}`,
+                  animationDelay: `${(idx % 4) * 0.45}s`,
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
     </header>
   );
 };
